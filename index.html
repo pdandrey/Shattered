@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Shattered &mdash; Latent Pixel Cup Entry by Dave Andrey</title>
+	</head>
+	<style>
+		body { background: black; color: white; }
+	</style>
+	<body>
+		<div id="info">
+			<div id="fps">
+				<span id="framecounter">(0/0 fps)</span>
+				<input type="checkbox" checked onclick="me.debug.renderHitBox = this.checked; me.game.repaint();"/>
+				Render HitBox
+			</div>
+			<div>
+				Arrow keys move.  A is the action button.
+			</div>
+		</div>
+		<div id="jsapp">
+			<script type="text/javascript" src="scripts/melonJS-0.9.3.js"></script>
+			<script type="text/javascript" src="scripts/settings.js"></script>
+			<script type="text/javascript" src="scripts/resources.js"></script>
+			<script type="text/javascript" src="scripts/dialog.js"></script>
+			<script type="text/javascript" src="scripts/player.js"></script>
+			<script type="text/javascript" src="scripts/npc.js"></script>
+			<script type="text/javascript" src="scripts/levels.js"></script>
+			<script type="text/javascript" src="scripts/story.js"></script>
+			<script type="text/javascript" src="scripts/main.js"></script>
+		</div>
+		<br/>
+		<a href="http://lpc.opengameart.org/">Latent Pixel Cup</a>
+	</body>
+</html>
