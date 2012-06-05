@@ -4,7 +4,7 @@ Shattered.Objects.NPC = me.ObjectEntity.extend({
 		
 		switch(settings.name.toLowerCase()) {
 			case 'doug':
-				settings.image = 'mainpcs';
+				settings.image = null;
 				settings.sprite = Shattered.Game.Resources.sprites["Doug"];
 				settings.portraitkey = settings.portraitkey || "doug";
 				this.moveState = 0;
@@ -28,6 +28,7 @@ Shattered.Objects.NPC = me.ObjectEntity.extend({
 		settings.type = settings.type || "npc";
 		
 		settings.sprite = settings.sprite || Shattered.Game.Resources.sprites[settings.spritekey];
+		settings.image = settings.image || settings.sprite.key;
 		
 		if(/-random$/.test(settings.spritekey) && Array.isArray(settings.sprite)) {
 			var index = parseInt(Math.random() * 100) % settings.sprite.length;

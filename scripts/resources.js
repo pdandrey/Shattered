@@ -40,6 +40,8 @@ Shattered.Resources = (function() {
 			map("augustun-armorshop", "Augustun-ArmorShop.tmx"),
 			map("augustun-weaponshop", "Augustun-WeaponShop.tmx"),
 			map("augustun-inn", "Augustun-Inn.tmx"),
+			sprite("clair", "clair.png"),
+			sprite("doug", "doug.png"),
 			sprite("mainpcs", "MainPCs.png"),
 			sprite("sheep", "sheep.png"),
 			sprite("24x32_Character_Template_C1_CharlesGabriel-1", "24x32_Character_Template_C1_CharlesGabriel-1.png"),
@@ -74,8 +76,8 @@ Shattered.Resources = (function() {
 			
 		sprites = [];
 		
-		buildSprite('Clair', "MainPCs", 48, 64, 51, 63,75,87,3, collision(8, 30, 31, 34));
-		buildSprite('Doug', "MainPCs", 48, 64, 54,66,78,90,3, collision(8, 30, 31, 34));
+		buildSprite('Clair', "clair", 64, 64, 0, 27,18,9,9, collision(16, 32, 32, 32));
+		buildSprite('Doug', "doug", 64, 64, 0, 27,18,9,9, collision(16, 32, 32, 32));
 		buildSprite('sheep-black-red', "sheep", 48, 64, 0,12,24,36,3);
 		buildSprite('sheep-gold', "sheep", 48, 64, 3,15,27,39,3);
 		buildSprite('sheep-black-gold', "sheep", 48, 64, 6,18,30,42,3);
@@ -105,7 +107,8 @@ Shattered.Resources = (function() {
 				left: [left],
 				width: width,
 				height: height,
-				collision: collision
+				collision: collision,
+				key: imageName
 			};
 			for(var i=1; i<count; ++i) {
 				tmp.up.push(up + i);

@@ -2,7 +2,7 @@ Shattered.Objects.Clair = me.ObjectEntity.extend({
  
 	init: function(x, y, settings) {
 		var sprite = Shattered.Game.Resources.sprites["Clair"];
-		settings.image = "mainpcs";
+		settings.image = sprite.key;
 		settings.spriteheight = sprite.height;
 		settings.spritewidth = sprite.width;
 		settings.collidable = true;
