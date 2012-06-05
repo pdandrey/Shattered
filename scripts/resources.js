@@ -134,21 +134,6 @@ Shattered.Resources = (function() {
 			Episodes: {
 				Prologue: {
 					Scene1: {
-						start: new Shattered.Objects.FullDialog([
-							{ portraitKey: "shepard", text: "Thanks for the help you two. My sheep are safe and I can't thank you enough." },
-							{ portraitKey: "clair", text: "I'm not called the best for nothing.  Doug will send you th..." },
-							{ portraitKey: "doug", text: "It was our pleasure.  Tomorrow Clair and I will go out and scout for a safer place for you to take them to graze." },
-							{ portraitKey: "clair", text: "Doug!" },
-							{ portraitKey: "doug", text: "*shrug*" },
-							{ portraitKey: "shepard", text: "You two are too good to everyone here in Augustun.\n\nI need to get these guys and gals to their field before they run off." }
-						], {count: 1, trigger: Shattered.Enums.DialogOptions.Trigger.OnLoad, onFinish: function() { Shattered.Game.Scene = 2; } }),
-						
-						start2: new Shattered.Objects.FullDialog([
-							{ portraitKey: "doug", text: "Wow, those were some crazy wolves huh?" },
-							{ portraitKey: "clair", text: "I still don't know how you saw them." },
-							{ portraitKey: "doug", text: "Luck I guess." },
-							{ portraitKey: "doug", text: "I'm going to go check on Grandma. See you around Clair." }
-						], {count: 1, trigger: Shattered.Enums.DialogOptions.Trigger.Scripted, onFinish: function(npc) { npc.path = Shattered.Pathing.Episodes.Prologue.Scene1.doug; } }),						
 					}
 				}
 			}

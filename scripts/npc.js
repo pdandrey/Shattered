@@ -249,63 +249,7 @@ Shattered.Pathing = {
 	Episodes: {
 		Prologue: {
 			Scene1: {
-				"doug": function(npc) {
-						
-					var path = [
-						{ x: 1312, y: null },
-						{ x: null, y: 832 },
-						{ x: 672, y: null },
-						{ x: null, y: 320 },
-						{ x: 272, y: null },
-						{ x: null, y: 224}
-					];
-					
-					if(!Shattered.Pathing.Global.movePath(npc, path)) {
-						if(npc.pathIndex >= path.length) {
-							npc.path = null;
-							me.game.remove(npc);
-						}
-						return false;
-					} else {
-						return true;
-					}
-				},
-				"shepard": function(npc) {
-					var path = [
-						{ x: 7 * Shattered.Settings.tileSize, y: null },
-						{ x: 42.5 * Shattered.Settings.tileSize, y: null },
-						{ x: null, y: 14 * Shattered.Settings.tileSize },
-						{ x: 39.5 * Shattered.Settings.tileSize, y: null }
-					];
-					
-					if(npc.pathIndex == 1 && !npc.sheepFollowing && npc.name === "shepard") {
-						npc.sheepFollowing = true;
-						var sheep = me.game.getEntityByName("sheep");
-						for(var i=0; i<sheep.length; ++i) {
-							sheep[i].path = Shattered.Pathing.Episodes.Prologue.Scene1.shepard;
-						}
-					} else if(npc.pathIndex == 2 && npc.name === "shepard" && !npc.dougStarted) {
-						npc.dougStarted = true;
-						Shattered.Game.DialogController.setText(Shattered.Game.Resources.dialog.Episodes.Prologue.Scene1.start2, me.game.getEntityByName("doug")[0]);
-					}
-					
-					if(!Shattered.Pathing.Global.movePath(npc, path)) {
-						if(npc.pathIndex >= path.length) {
-							if(npc.name === "shepard") {
-								me.game.getEntityByName("doug")[0].path = Shattered.Pathing.Episodes.Prologue.Scene1.doug;
-								npc.path = Shattered.Pathing.Global.none;
-							} else {
-								npc.path = Shattered.Pathing.Global.random;
-								npc.velocity = 1;
-							}
-						}
-						return false;
-					} else {
-						return true;
-					}
-				},
 				fountainChild: function(npc) {
-						
 					var path = [
 						{ x: null, y: (61 * 32) },
 						{ x: 35 * 32, y: null },
