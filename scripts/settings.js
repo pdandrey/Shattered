@@ -9,7 +9,7 @@ var Shattered = {
 			}
 			
 			Object.defineProperty(directions, "random", {
-				get: function() { return ["up","down","left","right"][new Number().random(0,3)]; }
+				get: function() { return ["up","down","left","right"][Number.random(0,3)]; }
 			});
 			Object.defineProperty(directions, "array", {
 				get: function() { return array; }

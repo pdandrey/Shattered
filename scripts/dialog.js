@@ -104,7 +104,7 @@ Shattered.Objects.BasicDialog = Object.extend({
 	
 	getText: function() {
 		if(this.mode === Shattered.Enums.DialogOptions.MODE.RANDOM) {
-			this.index = new Number().random(0, this.dialog.length - 1);
+			this.index = Number.random(0, this.dialog.length - 1);
 		} 
 		var ret = this.dialog[this.index];
 		this.index = (this.index + 1) % this.dialog.length;

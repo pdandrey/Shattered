@@ -27,7 +27,7 @@ Shattered.Objects.NPC = me.ObjectEntity.extend({
 		settings.sprite = settings.sprite || Shattered.Game.Resources.sprites[settings.spritekey];
 		
 		if(/-random$/.test(settings.spritekey) && Array.isArray(settings.sprite)) {
-			var index = parseInt(Math.random() * 100) % settings.sprite.length;
+			var index = Number.random(0, settings.sprite.length);
 			var key = settings.sprite[index];
 			settings.sprite = Shattered.Game.Resources.sprites[key];
 		}
