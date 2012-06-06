@@ -49,7 +49,7 @@ Shattered.Story = (function() {
 									npc.sheepFollowing = true;
 									var sheep = me.game.getEntityByName("sheep");
 									for(var i=0; i<sheep.length; ++i) {
-										sheep[i].path = Shattered.Pathing.Episodes.Prologue.Scene1.shepard;
+										sheep[i].path = shepard.path;
 									}
 								} else if(npc.pathIndex == 2 && npc.name === "shepard" && !npc.dougStarted) {
 									npc.dougStarted = true;
@@ -81,6 +81,7 @@ Shattered.Story = (function() {
 							count: 1, 
 							trigger: Shattered.Enums.DialogOptions.Trigger.Scripted, 
 							onFinish: function(npc) { 
+								ret.Scene = 2;
 								doug.path = function(npc) {
 									var path = [
 										{ x: 1312, y: null },

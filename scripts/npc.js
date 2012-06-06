@@ -170,7 +170,7 @@ Shattered.Pathing = {
 					npc.collide) {
 					npc.collide = false;
 					npc.start = null;
-					npc.ticksTillAction = Math.random() * npc.delay;
+					npc.ticksTillAction = Math.random() * npc.settings.delay;
 					return false;
 				}
 			}
