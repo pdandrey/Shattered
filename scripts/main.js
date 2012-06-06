@@ -3,7 +3,7 @@ var jsApp	=
 		Shattered.Story.onLevelLoaded(levelId);
 		
 		if(me.game.getEntityByName("dialogcontroller").length == 0) {
-			me.game.add(Shattered.Game.DialogController);
+			me.game.add(Shattered.Game.Dialog);
 		}
 		if(me.game.getEntityByName("clair").length == 0 && Shattered.Game.ExitTo) {
 			var pos = Shattered.Utility.toXY(Shattered.Game.ExitTo);
@@ -73,11 +73,11 @@ var jsApp	=
 		me.debug.renderHitBox = true;
 		me.sys.gravity = 0;
 		
-		Shattered.Game.DialogController = new Shattered.Objects.DialogBox(0,0,100);
+		Shattered.Game.Dialog = new Shattered.Objects.DialogBox(0,0,100);
 		
-		me.levelDirector.onLevelLoaded = function() {
-			me.game.add(Shattered.Game.DialogController, Shattered.Game.DialogController.z);
-		}
+		// me.levelDirector.onLevelLoaded = function() {
+			// me.game.add(Shattered.Game.Dialog, Shattered.Game.Dialog);
+		// }
 		
 		// load everything & display a loading screen
 		me.state.change(me.state.LOADING);
@@ -114,9 +114,9 @@ Shattered.Objects.PlayScreen = me.ScreenObject.extend({
 		//me.levelDirector.loadLevel("augustun-armorshop");
 		me.game.addHUD(0, 0, Shattered.Settings.width, Shattered.Settings.height);
 		
-		me.game.add(Shattered.Game.DialogController, Shattered.Game.DialogController.z);
+		me.game.add(Shattered.Game.Dialog, Shattered.Game.Dialog.z);
 		
-		me.game.HUD.addItem("dialog", Shattered.Game.DialogController.getHUD());
+		me.game.HUD.addItem("dialog", Shattered.Game.Dialog.getHUD());
 		me.levelDirector.loadLevel("Prologue-Augustun");
 		
 		me.game.sort();

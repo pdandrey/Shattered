@@ -4,21 +4,18 @@ Shattered.Objects.NPC = me.ObjectEntity.extend({
 		
 		switch(settings.name.toLowerCase()) {
 			case 'doug':
-				settings.image = null;
 				settings.sprite = Shattered.Game.Resources.sprites["Doug"];
 				settings.portraitkey = settings.portraitkey || "doug";
 				this.moveState = 0;
 				break;
 			
 			case 'sheep':
-				settings.image = 'sheep';
 				settings.spritekey = settings.spritekey || "sheep-random";
 				settings.velocity = settings.velocity || 1;
 				settings.delay = settings.delay || 500;
 				break;
 				
 			default:
-				settings.image = '24x32_Character_Template_C1_CharlesGabriel-1';
 				settings.spritekey = settings.spritekey || "npc-male";
 				settings.velocity = settings.velocity || 2;
 				settings.delay = settings.delay || 300;
@@ -28,13 +25,14 @@ Shattered.Objects.NPC = me.ObjectEntity.extend({
 		settings.type = settings.type || "npc";
 		
 		settings.sprite = settings.sprite || Shattered.Game.Resources.sprites[settings.spritekey];
-		settings.image = settings.image || settings.sprite.key;
 		
 		if(/-random$/.test(settings.spritekey) && Array.isArray(settings.sprite)) {
 			var index = parseInt(Math.random() * 100) % settings.sprite.length;
 			var key = settings.sprite[index];
 			settings.sprite = Shattered.Game.Resources.sprites[key];
 		}
+		
+		settings.image = settings.image || settings.sprite.key;
 		
 		settings.spritewidth = settings.spritewidth || settings.sprite.width;
 		settings.spriteheight = settings.spriteheight || settings.sprite.height;
@@ -78,7 +76,7 @@ Shattered.Objects.NPC = me.ObjectEntity.extend({
 	},
 	
 	action: function(src) {
-		var dialogController = Shattered.Game.DialogController;
+		var dialogController = Shattered.Game.Dialog;
 		
 		if(!dialogController) {
 			return;
@@ -94,19 +92,8 @@ Shattered.Objects.NPC = me.ObjectEntity.extend({
 	},
 	
 	update: function() {
-	
-		if(!this.firstUpdate) {
-			this.firstUpdate = true;
-			if(this.dialog && this.dialog.settings && this.dialog.settings.trigger == Shattered.Enums.DialogOptions.Trigger.OnLoad) {
-				var ctrl = Shattered.Game.DialogController;
-				if(ctrl.isInDialog())
-					console.log("Cannot display OnLoad dialog while in dialog");
-				else
-					ctrl.setText(this.dialog, this);
-			}
-		}
 		
-		if(Shattered.Game.DialogController.isInDialog())
+		if((Shattered.Game.Control & Shattered.Enums.Control.Npc) !== Shattered.Enums.Control.Npc)
 			return;
 		
 		this.ticksTillAction = Math.max(0, this.ticksTillAction - 1);

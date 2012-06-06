@@ -34,6 +34,11 @@ var Shattered = {
 		Items: {
 			Type: { Weapon: 0, Armor: 1, Usable: 2, KeyItem: 3 },
 			Slot: { Body: 'Body', Head: 'Head', Hands: 'Hands', Legs: 'Legs', Feet: 'Feet', Main: 'Main', OffHand: 'OffHand' }
+		},
+		Control: {
+			Player: 1,
+			Dialog: 2,
+			Npc: 4
 		}
 	},
 
@@ -41,10 +46,9 @@ var Shattered = {
 		Resources: null,
 		Episode: "Prologue",
 		Scene: 1,
-		Controller: null,
-		PlayerEntity: null,
-		DialogController: null,
-		ExitTo: { x: 4, y: 42 }
+		ExitTo: { x: 4, y: 42 },
+		Control: null,
+		Dialog: null
 	},
 
 	Settings: {

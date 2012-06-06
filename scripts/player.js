@@ -32,10 +32,7 @@ Shattered.Objects.Clair = me.ObjectEntity.extend({
 
 		this.cancelMove = null;
 		this.target = null;
-		Shattered.Game.PlayerEntity = this;
-		
-		if(!Shattered.Game.DialogController.isInDialog())
-			Shattered.Game.Controller = this;
+
 	},
  
 	follow: function() { me.game.viewport.follow(this.pos, me.game.viewport.AXIS.BOTH); },
@@ -45,7 +42,7 @@ Shattered.Objects.Clair = me.ObjectEntity.extend({
 	},
     
 	update: function() {
-		if(Shattered.Game.Controller != this)
+		if((Shattered.Game.Control & Shattered.Enums.Control.Player) != Shattered.Enums.Control.Player)
 			return;
 			
 		if(me.input.isKeyPressed('action')) {

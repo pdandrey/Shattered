@@ -44,6 +44,10 @@ Shattered.Resources = (function() {
 			sprite("doug", "doug.png"),
 			sprite("mainpcs", "MainPCs.png"),
 			sprite("sheep", "sheep.png"),
+			sprite("npc_f1", "student_a.png"),
+			sprite("npc_f2", "student_b.png"),
+			sprite("npc_m", "student_c.png"),
+			sprite("npc_standing", "characters_accessorized.png"),
 			sprite("24x32_Character_Template_C1_CharlesGabriel-1", "24x32_Character_Template_C1_CharlesGabriel-1.png"),
 			portrait("48x48_Faces_1st_Sheet_Update_CharlesGabriel_OGA_0"),
 			portrait("48x48_Faces_2nd_Sheet_Update_CharlesGabriel_OGA_0"),
@@ -86,8 +90,8 @@ Shattered.Resources = (function() {
 		buildSprite('sheep-tan', "sheep", 48, 64, 51, 63, 75, 87, 3);
 		buildSprite('sheep-white-black', "sheep", 48, 64, 54, 66, 78, 90, 3, collision(8, 30, 32, 32));
 		buildSprite('sheep-pink', "sheep", 48, 64, 57, 69, 81, 93, 3);
-		buildSprite('npc-male', '24x32_Character_Template_C1_CharlesGabriel-1', 48, 64, 0, 12, 24, 36, 3);
-		buildSprite('npc-female', '24x32_Character_Template_C1_CharlesGabriel-1', 48, 64, 3, 15, 27, 39, 3);
+		buildSprite('npc-male', 'npc_m', 64, 64, 0, 27,18,9,9, collision(16, 32, 32, 32));
+		buildSprite('npc-female', 'npc_f2', 64, 64, 0, 27,18,9,9, collision(16, 32, 32, 32));
 		buildSprite('npc-child-male', '24x32_Character_Template_C1_CharlesGabriel-1', 48, 64, 6, 18, 30, 42, 3);
 		buildSprite('npc-child-female', '24x32_Character_Template_C1_CharlesGabriel-1', 48, 64, 9, 21, 33, 45, 3);
 		

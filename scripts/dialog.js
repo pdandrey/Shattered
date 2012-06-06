@@ -125,7 +125,8 @@ Shattered.Objects.FullDialog = Shattered.Objects.BasicDialog.extend({
 		this.settings = {
 			count: settings.count || -1, 
 			trigger: settings.trigger || Shattered.Enums.DialogOptions.Trigger.Talk, 
-			onFinish: settings.onFinish || null
+			onFinish: settings.onFinish || null,
+			allowNpcMovement: settings.allowNpcMovement || false
 		};
 	},
 	
@@ -162,7 +163,6 @@ Shattered.Objects.DialogBox = (function() {
 		hud.textMeasured = false;
 		hud.maxScroll = null;
 		hud.scrollOffset = 0;
-		Shattered.Game.Controller = dialog;
 		isInDialog = true;
 	}
 
@@ -186,12 +186,15 @@ Shattered.Objects.DialogBox = (function() {
 			this.textIndex = 0;
 			currentDialog = dialog;
 			sourceNpc = npc;
+			Shattered.Game.Control = Shattered.Enums.Control.Dialog;
+			if(dialog.settings && dialog.settings.allowNpcMovement)
+				Shattered.Game.Control |= Shattered.Enums.Control.Npc;
 			advanceText(this);
 		},
 		
 		clear: function() { 
 			me.game.HUD.setItemValue("dialog", null);
-		 	Shattered.Game.Controller = Shattered.Game.PlayerEntity;
+		 	Shattered.Game.Control = Shattered.Enums.Control.Player | Shattered.Enums.Control.Npc;
 			isInDialog = false;
 			if(currentDialog && currentDialog.settings && currentDialog.settings.onFinish) {
 				currentDialog.settings.onFinish(sourceNpc);
@@ -200,7 +203,7 @@ Shattered.Objects.DialogBox = (function() {
 		},
 		
 		update: function() {
-			if(Shattered.Game.Controller != this)
+			if((Shattered.Game.Control & Shattered.Enums.Control.Dialog) !== Shattered.Enums.Control.Dialog)
 				return;
 			
 			if(me.input.isKeyPressed("action")) {

@@ -18,7 +18,6 @@ Shattered.Story = (function() {
 				if(ret.Scene === 1) {
 					var clair = new Shattered.Objects.Clair(4 * Shattered.Settings.tileSize, 42 * Shattered.Settings.tileSize, { name: "clair"});
 					var doug = new Shattered.Objects.NPC(6 * Shattered.Settings.tileSize, 42 * Shattered.Settings.tileSize, { name: "doug", pathkey: 'none' });
-					
 					var shepard = new Shattered.Objects.NPC(4 * Shattered.Settings.tileSize, 44 * Shattered.Settings.tileSize, { name: "shepard", velocity: 2 });
 					
 					var z = 7;
@@ -36,7 +35,8 @@ Shattered.Story = (function() {
 							{ portraitKey: "clair", text: "Doug!" },
 							{ portraitKey: "doug", text: "*shrug*" },
 							{ portraitKey: "shepard", text: "You two are too good to everyone here in Augustun.\n\nI need to get these guys and gals to their field before they run off." }
-						], {count: 1, trigger: Shattered.Enums.DialogOptions.Trigger.OnLoad, onFinish: function() { 
+						], {count: 1, allowNpcMovement: false, trigger: Shattered.Enums.DialogOptions.Trigger.OnLoad, onFinish: function() {
+							Shattered.Game.Control = Shattered.Enums.Control.Npc;
 							shepard.path = function(npc) {
 								var path = [
 									{ x: 7 * Shattered.Settings.tileSize, y: null },
@@ -51,9 +51,12 @@ Shattered.Story = (function() {
 									for(var i=0; i<sheep.length; ++i) {
 										sheep[i].path = shepard.path;
 									}
+									setTimeout(function() {
+										npc.dougStarted = true;
+										Shattered.Game.Dialog.setText(dougDialog, doug);
+									}, 2000);	
 								} else if(npc.pathIndex == 2 && npc.name === "shepard" && !npc.dougStarted) {
-									npc.dougStarted = true;
-									Shattered.Game.DialogController.setText(dougDialog, doug);
+									
 								}
 								
 								if(!Shattered.Pathing.Global.movePath(npc, path)) {
@@ -78,6 +81,7 @@ Shattered.Story = (function() {
 							{ portraitKey: "doug", text: "Luck I guess." },
 							{ portraitKey: "doug", text: "I'm going to go check on Grandma. See you around Clair." }
 						], {
+							allowNpcMovement: true,
 							count: 1, 
 							trigger: Shattered.Enums.DialogOptions.Trigger.Scripted, 
 							onFinish: function(npc) { 
@@ -85,7 +89,7 @@ Shattered.Story = (function() {
 								doug.path = function(npc) {
 									var path = [
 										{ x: 1312, y: null },
-										{ x: null, y: 832 },
+									{ x: null, y: 832 },
 										{ x: 672, y: null },
 										{ x: null, y: 320 },
 										{ x: 272, y: null },
@@ -106,7 +110,7 @@ Shattered.Story = (function() {
 						}
 					);						
 						
-					Shattered.Game.DialogController.setText(shepardDialog, shepard);
+					Shattered.Game.Dialog.setText(shepardDialog, shepard);
 				} else {
 					console.log("Need to create shepard and sheep");
 				}
