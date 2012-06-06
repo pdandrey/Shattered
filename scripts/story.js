@@ -16,6 +16,7 @@ Shattered.Story = (function() {
 		function prologue(levelID) {
 			if(levelID === 'prologue-augustun') {
 				if(ret.Scene === 1) {
+					console.log("starting scene 1 ");
 					var clair = new Shattered.Objects.Clair(4 * Shattered.Settings.tileSize, 42 * Shattered.Settings.tileSize, { name: "clair"});
 					var doug = new Shattered.Objects.NPC(6 * Shattered.Settings.tileSize, 42 * Shattered.Settings.tileSize, { name: "doug", pathkey: 'none' });
 					var shepard = new Shattered.Objects.NPC(4 * Shattered.Settings.tileSize, 44 * Shattered.Settings.tileSize, { name: "shepard", velocity: 2 });
@@ -55,8 +56,6 @@ Shattered.Story = (function() {
 										npc.dougStarted = true;
 										Shattered.Game.Dialog.setText(dougDialog, doug);
 									}, 2000);	
-								} else if(npc.pathIndex == 2 && npc.name === "shepard" && !npc.dougStarted) {
-									
 								}
 								
 								if(!Shattered.Pathing.Global.movePath(npc, path)) {
@@ -111,9 +110,34 @@ Shattered.Story = (function() {
 					);						
 						
 					Shattered.Game.Dialog.setText(shepardDialog, shepard);
-				} else {
-					console.log("Need to create shepard and sheep");
-				}
+				} else if(ret.Scene === 2) {
+					
+					var shepard = new Shattered.Objects.NPC(39.5 * Shattered.Settings.tileSize, 14 * Shattered.Settings.tileSize, { name: "shepard", velocity: 2, pathkey: 'none' });
+					shepard.path = null;
+					
+					var z = 7;
+					me.game.add(shepard, z);
+					
+					var usedXY = {};
+					for(var x=40; x<=42; ++x)
+						for(var y=6; y<=8; ++y)
+							usedXY[x.toString() + "," + y.toString()] = true;
+					
+					for(var i=0; i<6; ++i) {
+						var x = -1;
+						var y = -1;
+						
+						do {
+							x = Number.random(29,53);
+							y = Number.random(1, 15);
+						} while(usedXY[x.toString() + "," + y.toString()]);
+						
+						usedXY[x.toString() + "," + y.toString()] = true;
+						
+						me.game.add(new Shattered.Objects.NPC(x * Shattered.Settings.tileSize, y * Shattered.Settings.tileSize, { name: 'sheep', pathkey: 'random', velocity: 2 }), z);
+					}
+					me.game.sort();
+				} // if(Scene 2)
 			}
 		}
 	}

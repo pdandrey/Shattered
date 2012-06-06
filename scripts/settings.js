@@ -44,10 +44,8 @@ var Shattered = {
 
 	Game: {
 		Resources: null,
-		Episode: "Prologue",
-		Scene: 1,
 		ExitTo: { x: 4, y: 42 },
-		Control: null,
+		Control: 5// Player | Npc,
 		Dialog: null
 	},
 

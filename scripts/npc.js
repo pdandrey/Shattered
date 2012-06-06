@@ -1,7 +1,7 @@
 Shattered.Objects.NPC = me.ObjectEntity.extend({
 	
 	init: function(x, y, settings) {
-		
+		console.log("creating " + settings.name, settings);
 		switch(settings.name.toLowerCase()) {
 			case 'doug':
 				settings.sprite = Shattered.Game.Resources.sprites["Doug"];
@@ -27,9 +27,11 @@ Shattered.Objects.NPC = me.ObjectEntity.extend({
 		settings.sprite = settings.sprite || Shattered.Game.Resources.sprites[settings.spritekey];
 		
 		if(/-random$/.test(settings.spritekey) && Array.isArray(settings.sprite)) {
-			var index = Number.random(0, settings.sprite.length);
+			var index = Number.random(0, settings.sprite.length-1);
 			var key = settings.sprite[index];
 			settings.sprite = Shattered.Game.Resources.sprites[key];
+			if(!settings.sprite)
+				throw "Bad index " + index;
 		}
 		
 		settings.image = settings.image || settings.sprite.key;
