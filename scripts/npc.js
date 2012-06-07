@@ -1,3 +1,5 @@
+"use strict";
+
 Shattered.Objects.NPC = me.ObjectEntity.extend({
 	
 	init: function(x, y, settings) {
@@ -67,9 +69,9 @@ Shattered.Objects.NPC = me.ObjectEntity.extend({
 		if(settings.dialog)
 			this.dialog = new Shattered.Objects.BasicDialog(Shattered.Enums.DialogOptions.MODE.SEQUENTIAL, settings.dialog);
 		else if(settings.dialogkey) {
-			if(Shattered.Game.Resources.dialog.Episodes[Shattered.Game.Episode]
-				&& Shattered.Game.Resources.dialog.Episodes[Shattered.Game.Episode]["Scene" + Shattered.Game.Scene])
-				this.dialog = Shattered.Game.Resources.dialog.Episodes[Shattered.Game.Episode]["Scene" + Shattered.Game.Scene][settings.dialogkey];
+			if(Shattered.Game.Resources.dialog.Episodes[Shattered.Story.Episode]
+				&& Shattered.Game.Resources.dialog.Episodes[Shattered.Story.Episode]["Scene" + Shattered.Story.Scene])
+				this.dialog = Shattered.Game.Resources.dialog.Episodes[Shattered.Story.Episode]["Scene" + Shattered.Story.Scene][settings.dialogkey];
 			if(!this.dialog)
 				this.dialog = Shattered.Game.Resources.dialog.Global[settings.dialogkey];
 		}

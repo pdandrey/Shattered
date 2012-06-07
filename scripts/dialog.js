@@ -1,3 +1,4 @@
+"use strict";
 
 Shattered.Objects.DialogBoxHUD = me.HUD_Item.extend({
 	init: function(x, y, height) {

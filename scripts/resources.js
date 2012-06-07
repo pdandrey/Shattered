@@ -1,3 +1,5 @@
+"use strict";
+
 // game resources
 
 Shattered.Resources = (function() {

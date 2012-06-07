@@ -1,3 +1,5 @@
+"use strict";
+
 Shattered.Objects.Clair = me.ObjectEntity.extend({
  
 	init: function(x, y, settings) {

@@ -1,3 +1,5 @@
+"use strict";
+
 Shattered.Story = (function() {
 	
 	function onLevelLoaded(levelID) {
@@ -6,7 +8,7 @@ Shattered.Story = (function() {
 		}
 		
 		/*
-		var func = Shattered.Levels.OnLevelLoaded[Shattered.Game.Episode]["Scene" + Shattered.Game.Scene];
+		var func = Shattered.Levels.OnLevelLoaded[Shattered.Story.Episode]["Scene" + Shattered.Story.Scene];
 		if(func) {
 			func(levelId);
 		}
@@ -150,7 +152,7 @@ Shattered.Story = (function() {
 		onLevelLoaded: onLevelLoaded,
 		onNpcAction: onNpcAction,
 		Episode: Shattered.Enums.Episodes.Prologue,
-		Scene: 2
+		Scene: 1
 	};
 	
 	return ret;

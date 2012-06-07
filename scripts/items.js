@@ -1,3 +1,5 @@
+"use strict";
+
 Shattered.Objects.Item = Object.extend({
 	init: function(name, type) {
 		this.name = name;

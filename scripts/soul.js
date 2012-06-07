@@ -1,3 +1,5 @@
+"use strict";
+
 Shattered.Objects.Power = (function() {
 
 	function execute(source, target) {

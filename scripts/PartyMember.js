@@ -1,3 +1,5 @@
+"use strict";
+
 Shattered.Party = (function() {
 	
 	var activeParty = [];

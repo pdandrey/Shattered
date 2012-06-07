@@ -1,3 +1,5 @@
+"use strict";
+
 var jsApp	= 
 {	levelLoaded: function(levelId) {
 		Shattered.Story.onLevelLoaded(levelId);
