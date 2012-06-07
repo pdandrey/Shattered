@@ -106,8 +106,8 @@ Shattered.Objects.NPC = me.ObjectEntity.extend({
 		
 		if(!this.path) {
 			// Is there a path for this Episode/Scene?
-			if(Shattered.Pathing.Episodes[Shattered.Game.Episode] && Shattered.Pathing.Episodes[Shattered.Game.Episode]["Scene" + Shattered.Game.Scene])
-				this.path = Shattered.Pathing.Episodes[Shattered.Game.Episode]["Scene" + Shattered.Game.Scene][this.settings.pathkey];
+			if(Shattered.Pathing.Episodes[Shattered.Story.Episode] && Shattered.Pathing.Episodes[Shattered.Story.Episode]["Scene" + Shattered.Story.Scene])
+				this.path = Shattered.Pathing.Episodes[Shattered.Story.Episode]["Scene" + Shattered.Story.Scene][this.settings.pathkey];
 			this.path = this.path || Shattered.Pathing.Global[this.settings.pathkey] || Shattered.Pathing.Global.random;
 		}
 		
@@ -255,6 +255,9 @@ Shattered.Pathing = {
 						return true;
 					}
 				}
+			},
+			Scene2: {
+				fountainChild: function(npc) { return Shattered.Pathing.Episodes.Prologue.Scene1.fountainChild(npc); }
 			}
 		}
 	}
