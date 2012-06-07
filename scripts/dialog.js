@@ -171,8 +171,8 @@ Shattered.Objects.DialogBox = (function() {
 		
 		init: function(x, y, height) {
 			hud = new Shattered.Objects.DialogBoxHUD(x, y, height); 
-			dialogActive = false;
-			settings = { 
+			isInDialog = false;
+			var settings = { 
 				name: "DialogController"
 			};
 			this.parent(0,0,settings);

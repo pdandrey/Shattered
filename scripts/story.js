@@ -152,7 +152,7 @@ Shattered.Story = (function() {
 		onLevelLoaded: onLevelLoaded,
 		onNpcAction: onNpcAction,
 		Episode: Shattered.Enums.Episodes.Prologue,
-		Scene: 1
+		Scene: 2
 	};
 	
 	return ret;
