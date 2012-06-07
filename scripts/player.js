@@ -96,6 +96,8 @@ Shattered.Objects.Clair = me.ObjectEntity.extend({
 		if(res) {
 			if(res.type == "partymember" || res.type == "npc") {
 				this.target = res.obj;
+			} else if(res.type == "npc_link") {
+				this.target = res.obj.getLink();
 			} else {
 				this.target = null;
 			}

@@ -260,3 +260,25 @@ Shattered.Pathing = {
 	}
 	
 };
+
+Shattered.Objects.NPC_Link = me.InvisibleEntity.extend({
+	init: function(x, y, settings) {
+		this.linkto = settings.linkto;
+		this.type = "npc_link";
+		this.parent(x, y, settings);
+	},
+	
+	getLink: function() {
+		var links = me.game.getEntityByName(this.linkto);
+		
+		if(links.length == 0)
+			throw "Could not find link " + this.linkto;
+		
+		if(links.length == 1)
+			return links[0];
+		
+		// figure out how to narrow it down.
+		
+		throw "Found " + links.length + " links.  Please narrow it down.";
+	}
+});

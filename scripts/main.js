@@ -93,6 +93,7 @@ var jsApp	=
 		me.entityPool.add("doug", Shattered.Objects.NPC);
 		me.entityPool.add("sheep", Shattered.Objects.NPC);
 		me.entityPool.add("npc", Shattered.Objects.NPC);
+		me.entityPool.add("npc_link", Shattered.Objects.NPC_Link);
 
 		// enable the keyboard
 		me.input.bindKey(me.input.KEY.LEFT,  "left");
