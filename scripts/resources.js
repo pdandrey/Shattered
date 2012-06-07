@@ -36,6 +36,8 @@ Shattered.Resources = (function() {
 			image("beach_sand_woa3_0", "beach_sand_woa3_0.png"),
 			image("Houses", "Houses.png"),
 			image("metatiles32x32", "metatiles32x32.png"),
+			image("inside", "inside.png"),
+			image("indoor_doodads", "indoor_doodads.png"),
 			map("Prologue-Augustun", "Augustun-Prologue.tmx"),
 			map("augustun-armorshop", "Augustun-ArmorShop.tmx"),
 			map("augustun-weaponshop", "Augustun-WeaponShop.tmx"),
