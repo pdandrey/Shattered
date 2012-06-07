@@ -82,16 +82,16 @@ Shattered.Resources = (function() {
 			
 		sprites = [];
 		
-		buildSprite('Clair', "clair", 64, 64, 0, 27,18,9,9, collision(16, 32, 32, 32));
+		buildSprite('Clair', "clair", 64, 64, 0, 27,18,9,9, collision(18, 32, 28, 32));
 		buildSprite('Doug', "doug", 64, 64, 0, 27,18,9,9, collision(16, 32, 32, 32));
-		buildSprite('sheep-black-red', "sheep", 48, 64, 0,12,24,36,3);
-		buildSprite('sheep-gold', "sheep", 48, 64, 3,15,27,39,3);
-		buildSprite('sheep-black-gold', "sheep", 48, 64, 6,18,30,42,3);
-		buildSprite('sheep-ghost', "sheep", 48, 64, 9,21,33,45, 3);
-		buildSprite('sheep-white-gold', "sheep", 48, 64, 48, 60, 72, 84, 3);
-		buildSprite('sheep-tan', "sheep", 48, 64, 51, 63, 75, 87, 3);
+		buildSprite('sheep-black-red', "sheep", 48, 64, 0,12,24,36,3, collision(8, 30, 32, 32));
+		buildSprite('sheep-gold', "sheep", 48, 64, 3,15,27,39,3, collision(8, 30, 32, 32));
+		buildSprite('sheep-black-gold', "sheep", 48, 64, 6,18,30,42,3, collision(8, 30, 32, 32));
+		buildSprite('sheep-ghost', "sheep", 48, 64, 9,21,33,45, 3, collision(8, 30, 32, 32));
+		buildSprite('sheep-white-gold', "sheep", 48, 64, 48, 60, 72, 84, 3, collision(8, 30, 32, 32));
+		buildSprite('sheep-tan', "sheep", 48, 64, 51, 63, 75, 87, 3, collision(8, 30, 32, 32));
 		buildSprite('sheep-white-black', "sheep", 48, 64, 54, 66, 78, 90, 3, collision(8, 30, 32, 32));
-		buildSprite('sheep-pink', "sheep", 48, 64, 57, 69, 81, 93, 3);
+		buildSprite('sheep-pink', "sheep", 48, 64, 57, 69, 81, 93, 3, collision(8, 30, 32, 32));
 		buildSprite('npc-male', 'npc_m', 64, 64, 0, 27,18,9,9, collision(16, 32, 32, 32));
 		buildSprite('npc-female', 'npc_f2', 64, 64, 0, 27,18,9,9, collision(16, 32, 32, 32));
 		buildSprite('npc-child-male', '24x32_Character_Template_C1_CharlesGabriel-1', 48, 64, 6, 18, 30, 42, 3);
