@@ -34,13 +34,13 @@ Shattered.Objects.Clair = me.ObjectEntity.extend({
 
 		this.cancelMove = null;
 		this.target = null;
-
+		this.type = "player";
 	},
  
 	follow: function() { me.game.viewport.follow(this.pos, me.game.viewport.AXIS.BOTH); },
 	
 	onCollision : function (res) {
-		console.log("collide");
+		//console.log("collide");
 	},
     
 	update: function() {

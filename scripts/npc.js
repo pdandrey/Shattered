@@ -123,12 +123,19 @@ Shattered.Objects.NPC = me.ObjectEntity.extend({
 		}
 		
 		if(moved) {
+			var oldPos = this.pos.clone();
 			try {
 				var env_res = this.updateMovement();
+				var res = me.game.collide(this);
+				if(res) {
+					//console.log("collide with %s", res.type);
+					this.pos.copy(oldPos);
+				}
 			} catch(err) {
 				this.vel.x = 0;
 				this.vel.y = 0;
-				this.updateMovement();
+				this.pos.copy(oldPos);
+				//this.updateMovement();
 				this.collide = true;
 			}
 		}
