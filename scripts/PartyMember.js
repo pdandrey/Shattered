@@ -5,11 +5,19 @@ Shattered.Party = (function() {
 	var activeParty = [];
 	
 	function addPartyMember(member) {
-		console.log("Unimplemented Method: addPartyMember");
+		var idx = indexOf(member.name);
+		
+		if(idx !== -1)
+			throw "Member " + member.name + " already exists in the active party";
+			
+		activeParty.push(member);
 	}
 	
 	function removePartyMember(name) {
-		console.log("Unimplemented Method: removePartyMember");
+		var idx = indexOf(name);
+		if(idx === -1)
+			return;
+		activeParty.splice(idx, 1);
 	}
 	
 	function battleOver(lstMonsters) {
@@ -17,7 +25,26 @@ Shattered.Party = (function() {
 	}
 	
 	function getPartyMember(name) {
-		console.log("Unimplemented Method: getPartyMember");
+		if(!name)
+			return activeParty.concat();
+		
+		var idx = indexOf(name);
+		
+		if(idx === -1)
+			return null;
+		
+		return activeParty[idx];
+	}
+	
+	function indexOf(name) {
+		var idx = 0;
+		for(; idx < activeParty.length; ++idx) {
+			if(activeParty[idx].name === name) {
+				return idx;
+			}
+		}
+		
+		return -1;
 	}
 	
 	var party = {
@@ -31,7 +58,7 @@ Shattered.Party = (function() {
 
 })();
 
-Shattered.Objects.PartyMember = (function() {
+Shattered.Objects.Mob = (function() {
 
 	function setSoulSet() {
 		this.__soulSet = arguments[0];
@@ -43,12 +70,13 @@ Shattered.Objects.PartyMember = (function() {
 	}
 
 	return Object.extend({
-		init: function(name, gender) {
+		init: function(name, gender, isEnemy) {
 			
 			Object.defineProperty(this, "name", { value: name, writable: false, enumerable: true });
 			Object.defineProperty(this, "gender", { value: gender, writable: false, enumerable: true });
 			Object.defineProperty(this, "hp", { value: new HP(0), writable: false, enumerable: true });
 			Object.defineProperty(this, "soulSet", { get: getSoulSet, set: setSoulSet, enumerable: true });
+			Object.defineProperty(this, "type", { value: isEnemy ? "Enemy" : "PartyMember", writable: false, enumerable: true });
 			
 			this.baseStats = new Shattered.Objects.Stats();
 			
@@ -64,11 +92,17 @@ Shattered.Objects.PartyMember = (function() {
 				offhand: null
 			};
 			
-			this.buffs = []; // [ { expires: # of rounds, fnUndo } ]
-		},
+			this.buffs = []; // [ { expires: get # of rounds, undo: fnUndo(mob), tick: fnTick(mob) } ]
+		}
 	});
 
 })();
+
+Shattered.Objects.Buff = Object.extend({
+	init: function(name, expires, ) {},
+	undo: function(mob) {},
+	tick: function(mob) {}
+});
 
 Shattered.Objects.HP = (function() {
 	
@@ -116,6 +150,7 @@ Shattered.Objects.Stats = (function()
 			this.Wisdom = wis || 0;
 			this.Charisma = cha || 0;
 			this.HP = hp || 0;
+			this.DeathCounter = 3;
 		}
 	});
 )();

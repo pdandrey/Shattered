@@ -32,15 +32,18 @@ Shattered.Resources = (function() {
 			return preload;
 		
 		return [
-			image("GrasslandV6_0_3", "GrasslandV6_0_3.png"),
-			image("treesv6_0", "treesv6_0.png"),
-			image("browserquest", "browserquest.png"),
-			image("beach_sand_woa3_0", "beach_sand_woa3_0.png"),
-			image("Houses", "Houses.png"),
-			image("metatiles32x32", "metatiles32x32.png"),
+			image("ground"),
+			image("doodads"),
+			image("trees"),
+			image("house"),
+			image("bridges"),
+			image("fishplants6"),
+			image("market3"),
+			image("market1"),
+			image("metatiles32x32"),
 			image("inside", "inside.png"),
 			image("indoor_doodads", "indoor_doodads.png"),
-			map("Prologue-Augustun", "Augustun-Prologue.tmx"),
+			map("Prologue-Augustun", "Augustun-Prologue2.tmx"),
 			map("augustun-armorshop", "Augustun-ArmorShop.tmx"),
 			map("augustun-weaponshop", "Augustun-WeaponShop.tmx"),
 			map("augustun-inn", "Augustun-Inn.tmx"),
@@ -60,6 +63,7 @@ Shattered.Resources = (function() {
 		];
 		
 		function image(name, filename) {
+			filename = filename || name + ".png";
 			return { name: name, type: "image", src: "images/" + filename };
 		}
 
@@ -84,7 +88,7 @@ Shattered.Resources = (function() {
 			
 		sprites = [];
 		
-		buildSprite('Clair', "clair", 64, 64, 0, 27,18,9,9, collision(18, 32, 28, 32));
+		buildSprite('Clair', "clair", 64, 64, 0, 27,18,9,9, collision(18, 32, 28, 28));
 		buildSprite('Doug', "doug", 64, 64, 0, 27,18,9,9, collision(16, 32, 32, 32));
 		buildSprite('sheep-black-red', "sheep", 48, 64, 0,12,24,36,3, collision(8, 30, 32, 32));
 		buildSprite('sheep-gold', "sheep", 48, 64, 3,15,27,39,3, collision(8, 30, 32, 32));

@@ -114,24 +114,32 @@ Shattered.Story = (function() {
 					Shattered.Game.Dialog.setText(shepardDialog, shepard);
 				} else if(ret.Scene === 2) {
 					
-					var shepard = new Shattered.Objects.NPC(39.5 * Shattered.Settings.tileSize, 14 * Shattered.Settings.tileSize, { name: "shepard", velocity: 2, pathkey: 'none' });
+					var shepard = new Shattered.Objects.NPC(16 * Shattered.Settings.tileSize, 12 * Shattered.Settings.tileSize, { name: "shepard", velocity: 2, pathkey: 'none' });
 					shepard.path = null;
 					
 					var z = 7;
 					me.game.add(shepard, z);
 					
 					var usedXY = {};
-					for(var x=40; x<=42; ++x)
-						for(var y=6; y<=8; ++y)
+					usedXY["10,5"] = true;
+					usedXY["1,8"] = true;
+					
+					for(var x=0; x<=4; ++x)
+						for(var y=4; y<=7; ++y)
 							usedXY[x.toString() + "," + y.toString()] = true;
+					
+					var minX = 0;
+					var maxX = 19;
+					var minY = 2;
+					var maxY = 10;
 					
 					for(var i=0; i<6; ++i) {
 						var x = -1;
 						var y = -1;
 						
 						do {
-							x = Number.random(29,53);
-							y = Number.random(1, 15);
+							x = Number.random(minX,maxX);
+							y = Number.random(minY, maxY);
 						} while(usedXY[x.toString() + "," + y.toString()]);
 						
 						usedXY[x.toString() + "," + y.toString()] = true;

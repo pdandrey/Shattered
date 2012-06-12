@@ -40,13 +40,14 @@ var Shattered = {
 		Control: {
 			Player: 1,
 			Dialog: 2,
-			Npc: 4
+			Npc: 4,
+			Battle: 8
 		}
 	},
 
 	Game: {
 		Resources: null,
-		ExitTo: { x: 4, y: 42 },
+		ExitTo: { x: 7, y: 35 },
 		Control: 5, // Player | Npc,
 		Dialog: null
 	},
@@ -64,6 +65,9 @@ var Shattered = {
 	Utility: {
 		toXY: function(pos) {
 			return { x: pos.x * Shattered.Settings.tileSize, y: pos.y * Shattered.Settings.tileSize };
+		},
+		toTileXY: function(pos) {
+			return { x: pos.x / Shattered.Settings.tileSize, y: pos.y / Shattered.Settings.tileSize };
 		}
 	}
 };

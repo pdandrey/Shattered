@@ -6,6 +6,15 @@
 	<style>
 		body { background: black; color: white; }
 	</style>
+	<script>
+		function getPosition() {
+			var player = me.game.getEntityByName("clair")[0];
+			var pos = player.pos;
+			var tile = { x: pos.x / Shattered.Settings.tileSize, y: pos.y / Shattered.Settings.tileSize };
+			console.log("%d, %d", tile.x, tile.y);
+			document.getElementById("spnPosition").innerText = tile.x + ", " + tile.y;
+		}
+	</script>
 	<body>
 		<div id="info">
 			<div id="fps">
@@ -16,6 +25,11 @@
 			<div>
 				Arrow keys move.  A is the action button.
 			</div>
+		</div>
+		<div style="float:right">
+			<button onclick="getPosition(); return false;">Get Position</button>
+			<br/>
+			<span id="spnPosition"></span>
 		</div>
 		<div id="jsapp">
 			<script type="text/javascript" src="scripts/melonJS-0.9.3.js"></script>
