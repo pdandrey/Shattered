@@ -37,6 +37,16 @@ var jsApp	=
 			this.setV(tileVector.toXY());
 		};
 		
+		me.game.sortFunction = function(a, b) {
+			var az = a.z;
+			var bz = b.z
+			if(a.type == "npc" || a.type=="player")
+				az = a.z + (a.pos.y / 32 / 1000);
+			if(b.type == "npc" || b.type=="player")
+				bz = b.z + (b.pos.y / 32 / 1000);
+			return (bz - az);
+		};
+		
 		me.LevelEntity.prototype.oldInit = me.LevelEntity.prototype.init;
 		me.LevelEntity.prototype.init = function(x, y, settings) {
 			this.oldInit(x, y, settings);

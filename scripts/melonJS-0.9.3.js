@@ -1421,13 +1421,15 @@
 		api.sort = function() {
 			// sort order is inverted, 
 			// since we use a reverse loop for the display 
-			gameObjects.sort(function(a, b) {
-				return (b.z - a.z);
-			});
+			gameObjects.sort(api.sortFunction);
 
 			// make sure we redraw everything
 			api.repaint();
 		};
+		
+		api.sortFunction = function(a, b) {
+			return (b.z - a.z);
+		}
 
 		/**
 		 * check for collision between objects
@@ -1714,6 +1716,8 @@
 			// update the game object
 			me.game.update();
 
+			me.game.sort();
+			
 			// draw the game objects
 			me.game.draw();
 

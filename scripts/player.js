@@ -126,6 +126,7 @@ Shattered.Objects.Clair = me.ObjectEntity.extend({
  
         // update animation if necessary
         if (this.vel.x!=0 || this.vel.y!=0) {
+				
             // update objet animation
             this.parent(this);
             return true;
