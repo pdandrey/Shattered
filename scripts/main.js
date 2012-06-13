@@ -28,14 +28,14 @@ var jsApp	=
 		
 		me.Vector2d.prototype.toTile = function() {
 			return new me.Vector2d(this.x / Shattered.Settings.tileSize, this.y / Shattered.Settings.tileSize);
-		}
-		me.Vector2d.prototype.toXY() {
+		};
+		me.Vector2d.prototype.toXY = function() {
 			return new me.Vector2d(this.x * Shattered.Settings.tileSize, this.y * Shattered.Settings.tileSize);
-		}
+		};
 		
 		me.Vector2d.prototype.fromTile = function(tileVector) {
 			this.setV(tileVector.toXY());
-		}
+		};
 		
 		me.LevelEntity.prototype.oldInit = me.LevelEntity.prototype.init;
 		me.LevelEntity.prototype.init = function(x, y, settings) {
