@@ -1,5 +1,8 @@
 "use strict";
 
+var v = null;
+var invis = null;
+
 var jsApp	= 
 {	levelLoaded: function(levelId) {
 		Shattered.Story.onLevelLoaded(levelId);
@@ -15,6 +18,13 @@ var jsApp	=
 			Shattered.Game.ExitTo = null;
 			me.game.sort();
 		}
+		
+		v = me.Vector2d.toXY(11, 36);
+		invis = new me.InvisibleEntity(v.x, v.y, { name: 'me.InvisibleEntity', collidable: true });
+		v = invis.pos;
+		invis.updateColRect(0, 32, 0, 32);
+		me.game.addEntity(invis, 7);
+		me.game.sort();
 	},
 	
 	onload: function() {
@@ -25,6 +35,14 @@ var jsApp	=
 			this.type = settings.type;
 		}
 		*/
+		
+		me.Vector2d.toTile = function(x, y) {
+			return new me.Vector2d(x / Shattered.Settings.tileSize, y / Shattered.Settings.tileSize);
+		}
+		
+		me.Vector2d.toXY = function(x, y) {
+			return new me.Vector2d(x * Shattered.Settings.tileSize, y * Shattered.Settings.tileSize);
+		}
 		
 		me.Vector2d.prototype.toTile = function() {
 			return new me.Vector2d(this.x / Shattered.Settings.tileSize, this.y / Shattered.Settings.tileSize);

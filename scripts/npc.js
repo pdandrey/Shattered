@@ -3,7 +3,7 @@
 Shattered.Objects.NPC = me.ObjectEntity.extend({
 	
 	init: function(x, y, settings) {
-		console.log("creating " + settings.name, settings);
+		console.log("creating %s: %o", settings.name, settings);
 		switch(settings.name.toLowerCase()) {
 			case 'doug':
 				settings.sprite = Shattered.Game.Resources.sprites["Doug"];
@@ -28,12 +28,28 @@ Shattered.Objects.NPC = me.ObjectEntity.extend({
 		
 		settings.sprite = settings.sprite || Shattered.Game.Resources.sprites[settings.spritekey];
 		
+		if(settings.gender) {
+			if(isNaN(parseInt(settings.gender))) {
+				settings.gender = settings.gender.toLowerCase();
+				if(gender === "female")
+					settings.gender = Shattered.Enums.Gender.Female;
+				else
+					settings.gender = Shattered.Enums.Gender.Male;
+			}
+		} else {
+			settings.gender = Shattered.Enums.Gender.Male;
+		}
+		
+		if(settings.createmob === true) {
+			this.mob = new Shattered.Objects.Mob(settings.name, settings.gender, settings.soul);
+		}
+		
 		if(/-random$/.test(settings.spritekey) && Array.isArray(settings.sprite)) {
 			var index = Number.random(0, settings.sprite.length-1);
 			var key = settings.sprite[index];
 			settings.sprite = Shattered.Game.Resources.sprites[key];
 			if(!settings.sprite)
-				throw "Bad index " + index;
+				throw "Bad random image index " + index;
 		}
 		
 		settings.image = settings.image || settings.sprite.key;
@@ -95,10 +111,31 @@ Shattered.Objects.NPC = me.ObjectEntity.extend({
 		}
 	},
 	
+	battleUpdate: function() {
+		if(!this.mob)
+			return false;
+		
+		if(Shattered.Battle.Current !== this.mob) 
+			return false;
+			
+		// Handle battle turn
+		
+		if(this.mob.type === "party") {
+			// listen for input
+		} else {
+			
+		}
+		
+		return false;
+	},
+	
 	update: function() {
 		
+		if((Shattered.Game.Control & Shattered.Enums.Control.Battle) === Shattered.Enums.Control.Battle)
+			return this.battleUpdate();
+		
 		if((Shattered.Game.Control & Shattered.Enums.Control.Npc) !== Shattered.Enums.Control.Npc)
-			return;
+			return false;
 		
 		this.ticksTillAction = Math.max(0, this.ticksTillAction - 1);
 		

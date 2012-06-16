@@ -15,6 +15,8 @@ Shattered.Objects.Clair = me.ObjectEntity.extend({
 		
 		this.setVelocity(3, 3);
 		this.gravity = 0;
+		
+		this.mob = Shattered.Party.Get("clair");
 
 		// set the display to follow our position on both axis
 		me.game.viewport.follow(this.pos, me.game.viewport.AXIS.BOTH);

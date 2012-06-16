@@ -114,7 +114,9 @@ Shattered.Story = (function() {
 					Shattered.Game.Dialog.setText(shepardDialog, shepard);
 				} else if(ret.Scene === 2) {
 					
-					var shepard = new Shattered.Objects.NPC(16 * Shattered.Settings.tileSize, 12 * Shattered.Settings.tileSize, { name: "shepard", velocity: 2, pathkey: 'none' });
+					var xy = me.Vector2d.toXY(16, 12);
+					
+					var shepard = new Shattered.Objects.NPC(xy.x, xy.y, { name: "shepard", velocity: 2, pathkey: 'none' });
 					shepard.path = null;
 					
 					var z = 7;
@@ -143,8 +145,9 @@ Shattered.Story = (function() {
 						} while(usedXY[x.toString() + "," + y.toString()]);
 						
 						usedXY[x.toString() + "," + y.toString()] = true;
+						xy = me.Vector2d.toXY(x, y);
 						
-						me.game.add(new Shattered.Objects.NPC(x * Shattered.Settings.tileSize, y * Shattered.Settings.tileSize, { name: 'sheep', pathkey: 'random', velocity: 2 }), z);
+						me.game.add(new Shattered.Objects.NPC(xy.x, xy.y, { name: 'sheep', pathkey: 'random', velocity: 2 }), z);
 					}
 					me.game.sort();
 				} // if(Scene 2)

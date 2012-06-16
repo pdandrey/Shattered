@@ -10,6 +10,7 @@ Shattered.Party = (function() {
 		if(idx !== -1)
 			throw "Member " + member.name + " already exists in the active party";
 			
+		member.type = "party";
 		activeParty.push(member);
 	}
 	
@@ -62,7 +63,7 @@ Shattered.Objects.Mob = (function() {
 
 	function setSoulSet() {
 		this.__soulSet = arguments[0];
-		this.currentStats = {};
+		this.Stats = new Shattered.Objects.Stats();
 	}
 	
 	function getSoulSet() {
@@ -70,15 +71,16 @@ Shattered.Objects.Mob = (function() {
 	}
 
 	return Object.extend({
-		init: function(name, gender, isEnemy) {
+		init: function(name, gender, initialSoul) {
 			
 			Object.defineProperty(this, "name", { value: name, writable: false, enumerable: true });
 			Object.defineProperty(this, "gender", { value: gender, writable: false, enumerable: true });
 			Object.defineProperty(this, "hp", { value: new HP(0), writable: false, enumerable: true });
 			Object.defineProperty(this, "soulSet", { get: getSoulSet, set: setSoulSet, enumerable: true });
-			Object.defineProperty(this, "type", { value: isEnemy ? "Enemy" : "PartyMember", writable: false, enumerable: true });
 			
 			this.baseStats = new Shattered.Objects.Stats();
+			this.initative = 0;
+			this.type = "Mob";
 			
 			setSoulSet(null);
 			
@@ -99,58 +101,45 @@ Shattered.Objects.Mob = (function() {
 })();
 
 Shattered.Objects.Buff = Object.extend({
-	init: function(name, expires, ) {},
+	init: function(name, expires) {},
 	undo: function(mob) {},
 	tick: function(mob) {}
 });
 
-Shattered.Objects.HP = (function() {
-	
-	function isBloodied() {
-		return this.current <= (this.max / 2);
-	}
-	
-	function isDead() {
-		return this.current <= 0;
-	}
-	
-	function takeDamage(damage) {
-		if(damage > 0)
-			this.current -= damage;
-		return this.isDead;
-	}
-	
-	function takeHealing(healing) {
-		if(healing > 0)
-			this.current = Math.min(this.max, this.current + healing);
-		return this.isDead;
-	}
-	
-	return Object.extend({
-		init: function(max) {
-			this.max = max,
-			this.current = current;
-			
-			Object.defineProperty(this, "isBloodied", { get: isBloodied, enumerable: true });
-			Object.defineProperty(this, "isDead", { get: isDead, enumerable: true });
-		},
-		damage: takeDamage,
-		heal: takeHealing
-	});
-})();
-
-Shattered.Objects.Stats = (function()
-	
-	return Object.extend({
-		init: function(str, con, dex, intel, wis, cha, hp) {
-			this.Strength = str || 0;
-			this.Constitution = con || 0;
-			this.Dexterity = dex || 0;
-			this.Intelligence = intel || 0;
-			this.Wisdom = wis || 0;
-			this.Charisma = cha || 0;
-			this.HP = hp || 0;
-			this.DeathCounter = 3;
+Shattered.Objects.HP = Object.extend({
+	init: function(max) {
+		var current = max;
+		
+		Object.defineProperty(this, "isBloodied", { get: function() { return current <= (max / 2); }, enumerable: true });
+		Object.defineProperty(this, "isDead", { get: function() { return current <= 0; }, enumerable: true });
+		Object.defineProperty(this, "max", { get: function() { return max; }, set: function(newMax) { current = Math.min(newMax, current); max = newMax; }, enumerable: true });
+		Object.defineProperty(this, "current", { get: function() { return current; }, enumerable: true });
+		
+		this.damage = function(damage) {
+			if(damage > 0)
+				current -= damage;
+			return this.isDead;
 		}
-	});
-)();
+		
+		this.heal = function(healing) {
+			if(healing > 0)
+				current = Math.min(max, Math.max(0, current) + healing);
+			return this.isDead;
+		}
+	}
+});
+
+Shattered.Objects.Stats = Object.extend({
+	init: function(str, con, dex, intel, wis, cha, hp, speed, range) {
+		this.Strength = str || 0;
+		this.Constitution = con || 0;
+		this.Dexterity = dex || 0;
+		this.Intelligence = intel || 0;
+		this.Wisdom = wis || 0;
+		this.Charisma = cha || 0;
+		this.HP = hp || new Shattered.Objects.HP();
+		this.DeathCounter = 3;
+		this.Speed = speed || 5;
+		this.Range = range || 5;
+	}
+});

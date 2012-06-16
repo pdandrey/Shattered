@@ -8,10 +8,14 @@ Shattered.Battle = (function() {
 	
 	function start(lstEnemies) {
 		var party = Shattered.Party.Get();
+		
+		for(var i=0; i<lstEnemies.length; ++i)
+			lstEnemies.type = "Enemy";
+		
 		queue = lstEnemies.concat(party);
 		
 		for(var i=0; i< queue.length; ++i)
-			queue[i].initative = Number.random(1, 30);
+			queue[i].initative = Number.random(0, 10) + queue[i].Stats.Speed;
 		
 		queue.sort(queueSort);
 		
@@ -50,12 +54,14 @@ Shattered.Battle = (function() {
 	
 	var ret = {
 		Start: start,
-		Order: getOrder,
 		Next: next,
 		End: end,
-		Current: getCurrent,
-		Incapacitate: incapacitate
+		Incapacitate: incapacitate,
+		Revive: revive
 	};
+	
+	Object.defineProperty(ret, "Current", { get: getCurrent, enumerable: true });
+	Object.defineProperty(ret, "Order", { get: getOrder, enumerable: true });
 	
 	return ret;
 })();
