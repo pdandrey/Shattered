@@ -37,6 +37,7 @@ Shattered.Objects.Clair = me.ObjectEntity.extend({
 		this.cancelMove = null;
 		this.target = null;
 		this.type = "player";
+		this.jumping = false;
 	},
  
 	follow: function() { me.game.viewport.follow(this.pos, me.game.viewport.AXIS.BOTH); },
@@ -92,9 +93,7 @@ Shattered.Objects.Clair = me.ObjectEntity.extend({
 		}
  
         // check & update player movement
-		try {
-        	var env_res = this.updateMovement();
-		} catch(err) {}
+        var env_res = this.updateMovement();
 		
 		var res = me.game.collide(this);
 		if(res) {
@@ -104,6 +103,7 @@ Shattered.Objects.Clair = me.ObjectEntity.extend({
 				this.target = res.obj.getLink();
 			} else {
 				this.target = null;
+				console.log("collide " + res.type);
 			}
 			
 			if (res.x != 0) {

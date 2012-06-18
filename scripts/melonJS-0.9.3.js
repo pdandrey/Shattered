@@ -4942,10 +4942,11 @@
 					
 					// normally the check should be on the object center point, 
 					// but since the collision check is done on corner, we must do the same thing here
-					if (left)
+					if (left) {
 						this.slopeY = tile.height - (this.collisionBox.right + this.vel.x - tile.pos.x);
-					else
+					} else {
 						this.slopeY = (this.collisionBox.left + this.vel.x - tile.pos.x);
+					}
 					
 					// cancel y vel
 					this.vel.y = 0;

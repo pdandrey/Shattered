@@ -88,7 +88,7 @@ Shattered.Resources = (function() {
 			
 		sprites = [];
 		
-		buildSprite('Clair', "clair", 64, 64, 0, 27,18,9,9, collision(18, 32, 28, 28));
+		buildSprite('Clair', "clair", 64, 64, 0, 27,18,9,8, collision(18, 32, 28, 28));
 		buildSprite('Doug', "doug", 64, 64, 0, 27,18,9,9, collision(16, 32, 32, 32));
 		buildSprite('sheep-black-red', "sheep", 48, 64, 0,12,24,36,3, collision(8, 30, 32, 32));
 		buildSprite('sheep-gold', "sheep", 48, 64, 3,15,27,39,3, collision(8, 30, 32, 32));
