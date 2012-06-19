@@ -5097,6 +5097,24 @@
 											} else { this.vel.y = 0; }
 											break;
 									}
+								} else if(collision.yprop.isForwardslashSolid) {
+									var x = this.collisionBox.right;
+									var y = this.collisionBox.bottom;
+									
+									var xDiff = collision.ytile.right - x;
+									var maxY = collision.ytile.top + xDiff;
+									
+									if(y >= maxY)
+										this.vel.y = 0;
+								} else if(collision.yprop.isBackslashSolid) {
+									var x = this.collisionBox.left;
+									var y = this.collisionBox.bottom;
+									
+									var xDiff = x - collision.ytile.left;
+									var maxY = collision.ytile.top + xDiff;
+									
+									if(y >= maxY)
+										this.vel.y = 0;
 								} else {
 									// adjust position to the corresponding tile
 									this.pos.y = ~~this.pos.y;
@@ -5176,6 +5194,24 @@
 											} else { this.vel.y = 0; }
 											break;
 									}
+								} else if(collision.yprop.isForwardslashSolid) {
+									var x = this.collisionBox.left;
+									var y = this.collisionBox.top;
+									
+									var xDiff = collision.ytile.right - x;
+									var maxY = collision.ytile.top + xDiff;
+									
+									if(y <= maxY)
+										this.vel.y = 0;
+								} else if(collision.yprop.isBackslashSolid) {
+									var x = this.collisionBox.right;
+									var y = this.collisionBox.top;
+									
+									var xDiff = collision.ytile.right - x;
+									var maxY = collision.ytile.bottom - xDiff;
+									
+									if(y <= maxY)
+										this.vel.y = 0;
 								} 
 							} else if (!collision.yprop.isPlatform	&& !collision.yprop.isLadder) {
 								if(this.gravity)
@@ -5286,6 +5322,24 @@
 											} else { this.vel.x = 0; }
 											break;
 									}
+								} else if(collision.xprop.isForwardslashSolid) {
+									var x = collision.x < 0 ? this.collisionBox.left : this.collisionBox.right;
+									var y = collision.x < 0 ? this.collisionBox.top : this.collisionBox.bottom;
+									
+									var yDiff = y - collision.xtile.top;
+									var maxX = collision.xtile.width - yDiff + collision.xtile.left;
+									
+									if((collision.x < 0 && x <= maxX) || (collision.x > 0 && x >= maxX))
+										this.vel.x = 0;
+								} else if(collision.xprop.isBackslashSolid) {
+									var x = collision.x < 0 ? this.collisionBox.left : this.collisionBox.right;
+									var y = collision.x < 0 ? this.collisionBox.bottom : this.collisionBox.top;
+									
+									var yDiff = y - collision.xtile.top;
+									var maxX = collision.xtile.left + yDiff;
+									
+									if((collision.x < 0 && x <= maxX) || (collision.x > 0 && x >= maxX))
+										this.vel.x = 0;
 								} else {
 									this.vel.x = 0;
 								}
@@ -8569,7 +8623,9 @@
 				NW_QUAD_SOLID : "qnw",
 				NE_QUAD_SOLID : "qne",
 				SW_QUAD_SOLID : "qsw",
-				SE_QUAD_SOLID : "qse"
+				SE_QUAD_SOLID : "qse",
+				FORWARDSLASH_SOLID : "fssolid",
+				BACKSLASH_SOLID : "bssolid"
 			};
 
 			// tile properties
@@ -8606,7 +8662,9 @@
 				isCornerSolid: false,
 				corner: null,
 				isVerticalSolid: false,
-				isHorizontalSolid: false
+				isHorizontalSolid: false,
+				isBackslashSolid: false,
+				isForwardslashSolid : false
 			};
 		},
 		
@@ -9750,9 +9808,13 @@
 					case this.type.SE_QUAD_SOLID: tileProp.corner = "se"; tileProp.isQuadrantSolid = true; break;
 					case this.type.VERTICAL_SOLID: tileProp.isVerticalSolid = true; break;
 					case this.type.HORIZONTAL_SOLID: tileProp.isHorizontalSolid = true; break;
+					case this.type.FORWARDSLASH_SOLID: tileProp.isForwardslashSolid = true; break;
+					case this.type.BACKSLASH_SOLID: tileProp.isBackslashSolid = true; break;
 				}
 				
-				tileProp.isSolid = tileProp.isSolid || tileProp.isCornerSolid || tileProp.isQuadrantSolid || tileProp.isVerticalSolid || tileProp.isHorizontalSolid;
+				tileProp.isSolid = tileProp.isSolid || tileProp.isCornerSolid || tileProp.isQuadrantSolid 
+									|| tileProp.isVerticalSolid || tileProp.isHorizontalSolid 
+									|| tileProp.isBackslashSolid || tileProp.isForwardslashSolid;
 				
 				// ensure the collidable flag is correct
 				tileProp.isCollidable = tileProp.isSolid || tileProp.isPlatform
