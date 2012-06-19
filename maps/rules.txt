@@ -1,1 +1,2 @@
 ./rules/trees.tmx
+./rules/fringe.tmx
