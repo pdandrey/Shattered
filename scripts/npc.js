@@ -331,3 +331,9 @@ Shattered.Objects.NPC_Link = me.InvisibleEntity.extend({
 		throw "Found " + links.length + " links.  Please narrow it down.";
 	}
 });
+
+Shattered.Objects.Chest = me.ObjectEntity.extend({
+	init: function(x,y,settings) {
+		this.parent(x,y,settings);
+	}
+});

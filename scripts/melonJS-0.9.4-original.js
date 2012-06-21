@@ -1440,15 +1440,13 @@
 		api.sort = function() {
 			// sort order is inverted, 
 			// since we use a reverse loop for the display 
-			gameObjects.sort(api.sortFunction);
+			gameObjects.sort(function(a, b) {
+				return (b.z - a.z);
+			});
 
 			// make sure we redraw everything
 			api.repaint();
 		};
-		
-		api.sortFunction = function(a, b) {
-			return (b.z - a.z);
-		}
 
 		/**
 		 * check for collision between objects
@@ -1737,9 +1735,6 @@
 			
 			// update all games object
 			me.game.update();
-			
-			// sort
-			me.game.sort();
 
 			// draw the game objects
 			me.game.draw();
@@ -4548,7 +4543,7 @@
 					 * @type Boolean
 					 * @name me.ObjectEntity#jumping
 					 */
-					this.jumping = false;
+					this.jumping = true;
 
 					// some usefull slope variable
 					this.slopeY = 0;
@@ -4890,80 +4885,11 @@
 						
 						if (collision.y > 0) {
 							if (collision.yprop.isSolid	|| (collision.yprop.isPlatform && (this.collisionBox.bottom - 1 <= collision.ytile.pos.y))) {
-								if(collision.yprop.isHorizontalSolid) {
-									var max = collision.ytile.pos.y - Math.floor(collision.ytile.height / 2) - 8;
-									var cHeightY = this.pos.y + this.collisionBox.height
-									if(cHeightY >= max)
-										this.vel.y = 0;
-								} else if(collision.yprop.isVerticalSolid) {
-									var mid = collision.ytile.pos.x + Math.floor(collision.ytile.width / 2);
-									if(this.collisionBox.left < mid && this.collisionBox.right > mid)
-										this.vel.y = 0;
-								} else if(collision.yprop.isCornerSolid) {
-									switch(collision.yprop.corner) {
-										case "se":
-											var xDiff = collision.ytile.right - this.collisionBox.right;
-											if(xDiff < collision.ytile.width / 2) {
-												var max = collision.ytile.top + collision.ytile.width / 2 + xDiff;
-												if(this.collisionBox.bottom >= max)
-													this.vel.y = 0;
-											}
-											break;
-											
-										case "sw":
-											var xDiff = this.collisionBox.left - collision.ytile.left;
-											if(xDiff < collision.ytile.width / 2) {
-												var max = collision.ytile.top + collision.ytile.width / 2 + xDiff;
-												if(this.collisionBox.bottom >= max)
-													this.vel.y = 0;
-											}
-											break;
-									}
-								} else if(collision.yprop.isQuadrantSolid) {
-									switch(collision.yprop.corner) {
-										case "se":
-											var xDiff = collision.ytile.right - this.collisionBox.right;
-											if(xDiff > collision.ytile.width / 2) {
-												var max = collision.ytile.top - collision.ytile.height / 2 + xDiff;
-												if(this.collisionBox.bottom >= max)
-													this.vel.y = 0;
-											} else { this.vel.y = 0; }
-											break;
-											
-										case "sw":
-											var xDiff = this.collisionBox.left - collision.ytile.left;
-											if(xDiff > collision.ytile.width / 2) {
-												var max = collision.ytile.top - collision.ytile.width / 2 + xDiff;
-												if(this.collisionBox.bottom >= max)
-													this.vel.y = 0;
-											} else { this.vel.y = 0; }
-											break;
-									}
-								} else if(collision.yprop.isForwardslashSolid) {
-									var x = this.collisionBox.right;
-									var y = this.collisionBox.bottom;
-									
-									var xDiff = collision.ytile.right - x;
-									var maxY = collision.ytile.top + xDiff;
-									
-									if(y >= maxY)
-										this.vel.y = 0;
-								} else if(collision.yprop.isBackslashSolid) {
-									var x = this.collisionBox.left;
-									var y = this.collisionBox.bottom;
-									
-									var xDiff = x - collision.ytile.left;
-									var maxY = collision.ytile.top + xDiff;
-									
-									if(y >= maxY)
-										this.vel.y = 0;
-								} else {
-									// adjust position to the corresponding tile
-									this.pos.y = ~~this.pos.y;
-									this.vel.y = (this.falling) ?collision.ytile.pos.y - this.collisionBox.bottom: 0 ;
-									this.falling = false;
-								}
-							}
+								// adjust position to the corresponding tile
+								this.pos.y = ~~this.pos.y;
+								this.vel.y = (this.falling) ?collision.ytile.pos.y - this.collisionBox.bottom: 0 ;
+								this.falling = false;
+							} 
 							else if (collision.yprop.isSlope && !this.jumping) {
 								// we stop falling
 								this.checkSlope(collision.ytile, collision.yprop.isLeftSlope);
@@ -4986,80 +4912,8 @@
 						}
 						// going up, collision with ceiling
 						else if (collision.y < 0) {
-							if(collision.yprop.isSolid) {
-								if(collision.yprop.isHorizontalSolid) {
-									var max = collision.ytile.pos.y - Math.floor(collision.ytile.height / 2) + 8;
-									var cHeightY = this.pos.y + this.collisionBox.height
-									if(this.pos.y <= max)
-										this.vel.y = 0;
-								} else if(collision.yprop.isVerticalSolid) {
-									var mid = collision.ytile.pos.x + Math.floor(collision.ytile.width / 2);
-									if(this.collisionBox.left < mid && this.collisionBox.right > mid)
-										this.vel.y = 0;
-								} else if(collision.yprop.isCornerSolid) {
-									switch(collision.yprop.corner) {
-										case "ne":
-											var xDiff = collision.ytile.right - this.collisionBox.right;
-											if(xDiff < collision.ytile.width / 2) {
-												var max = collision.ytile.top + collision.ytile.width / 2 - xDiff;
-												if(this.collisionBox.top <= max)
-													this.vel.y = 0;
-											}
-											break;
-											
-										case "nw":
-											var xDiff = this.collisionBox.left - collision.ytile.left;
-											if(xDiff < collision.ytile.width / 2) {
-												var max = collision.ytile.top + collision.ytile.width / 2 - xDiff;
-												if(this.collisionBox.top <= max)
-													this.vel.y = 0;
-											}
-											break;
-									}
-								} else if(collision.yprop.isQuadrantSolid) {
-									switch(collision.yprop.corner) {
-										case "ne":
-											var xDiff = collision.ytile.right - this.collisionBox.right;
-											if(xDiff > collision.ytile.width / 2) {
-												var max = collision.ytile.bottom + collision.ytile.width / 2 - xDiff;
-												if(this.collisionBox.top <= max)
-													this.vel.y = 0;
-											} else { this.vel.y = 0; }
-											break;
-											
-										case "nw":
-											var xDiff = this.collisionBox.left - collision.ytile.left;
-											if(xDiff > collision.ytile.width / 2) {
-												var max = collision.ytile.bottom + collision.ytile.width / 2 - xDiff;
-												if(this.collisionBox.top <= max)
-													this.vel.y = 0;
-											} else { this.vel.y = 0; }
-											break;
-									}
-								} else if(collision.yprop.isForwardslashSolid) {
-									var x = this.collisionBox.left;
-									var y = this.collisionBox.top;
-									
-									var xDiff = collision.ytile.right - x;
-									var maxY = collision.ytile.top + xDiff;
-									
-									if(y <= maxY)
-										this.vel.y = 0;
-								} else if(collision.yprop.isBackslashSolid) {
-									var x = this.collisionBox.right;
-									var y = this.collisionBox.top;
-									
-									var xDiff = collision.ytile.right - x;
-									var maxY = collision.ytile.bottom - xDiff;
-									
-									if(y <= maxY)
-										this.vel.y = 0;
-								} else {
-									this.vel.y = 0;
-								}
-							} else if (!collision.yprop.isPlatform	&& !collision.yprop.isLadder) {
-								if(this.gravity)
-									this.falling = true;
+							if (!collision.yprop.isPlatform	&& !collision.yprop.isLadder) {
+								this.falling = true;
 								// cancel the y velocity
 								this.vel.y = 0;
 							}
@@ -5073,121 +4927,8 @@
 						
 						if (collision.xprop.isSlope && !this.jumping) {
 							this.checkSlope(collision.xtile, collision.xprop.isLeftSlope);
-							if(this.gravity)
-								this.falling = false;
+							this.falling = false;
 						} else {
-							if(collision.xprop.isSolid) {
-								if(collision.xprop.isHorizontalSolid) {
-									var max = collision.xtile.pos.y - Math.floor(collision.xtile.height / 2);
-									if(this.pos.y <= max && this.pos.y + this.collisionBox.height > max)
-										this.vel.x = 0;
-								} else if(collision.xprop.isVerticalSolid) {
-									var max = collision.xtile.pos.x + Math.floor(collision.xtile.width / 2);
-									if(collision.x < 0) {
-										if(this.collisionBox.left <= max)
-											this.vel.x = 0;
-									} else {
-										if(this.collisionBox.right >= max)
-											this.vel.x = 0;
-									}
-								} else if(collision.xprop.isCornerSolid) {
-									switch(collision.xprop.corner) {
-										case "se":
-											var yDiff = collision.xtile.bottom - this.collisionBox.bottom;
-											if(collision.x > 0 && yDiff < collision.xtile.height / 2) {
-												var max = collision.xtile.right - collision.xtile.width / 2 + yDiff;
-												if(this.collisionBox.right >= max)
-													this.vel.x = 0;
-											}
-											break;
-											
-										case "ne":
-											var yDiff = this.collisionBox.top - collision.xtile.top
-											if(collision.x > 0 && yDiff < collision.xtile.height / 2) {
-												var max = collision.xtile.right - collision.xtile.width / 2 + yDiff;
-												if(this.collisionBox.right >= max)
-													this.vel.x = 0;
-											}
-											break;
-											
-										case "sw":
-											var yDiff = collision.xtile.bottom - this.collisionBox.bottom;
-											if(collision.x < 0 && yDiff < collision.xtile.height / 2) {
-												var max = collision.xtile.left + collision.xtile.width / 2 - yDiff;
-												if(this.collisionBox.left <= max)
-													this.vel.x = 0;
-											}
-											break;
-											
-										case "nw":
-											var yDiff = this.collisionBox.top - collision.xtile.top;
-											if(collision.x < 0 && yDiff < collision.xtile.height / 2) {
-												var max = collision.xtile.left + collision.xtile.width / 2 - yDiff;
-												if(this.collisionBox.left <= max)
-													this.vel.x = 0;
-											}
-											break;
-									}
-								} else if(collision.xprop.isQuadrantSolid) {
-									switch(collision.xprop.corner) {
-										case "se":
-											var yDiff = collision.xtile.bottom - this.collisionBox.bottom;
-											if(collision.x > 0 && yDiff > collision.xtile.height / 2) {
-												var max = collision.xtile.left + yDiff - collision.xtile.width / 2;
-												if(this.collisionBox.right >= max)
-													this.vel.x = 0;
-											} else { this.vel.x = 0; }
-											break;
-											
-										case "ne":
-											var yDiff = this.collisionBox.top - collision.xtile.top;
-											if(collision.x > 0 && yDiff > collision.xtile.height / 2) {
-												var max = collision.xtile.right - yDiff;
-												if(this.collisionBox.right >= max)
-													this.vel.x = 0;
-											} else { this.vel.x = 0; }
-											break;
-											
-										case "sw":
-											var yDiff = collision.xtile.bottom - this.collisionBox.bottom;
-											if(collision.x < 0 && yDiff > collision.xtile.height / 2) {
-												var max = collision.xtile.right + collision.xtile.width/2 -yDiff;
-												if(this.collisionBox.left <= max)
-													this.vel.x = 0;
-											} else { this.vel.x = 0; }
-											break;
-											
-										case "nw":
-											var yDiff = this.collisionBox.top - collision.xtile.top;
-											if(collision.x < 0 && yDiff > collision.xtile.height / 2) {
-												var max = collision.xtile.right - yDiff + collision.xtile.width / 2;
-												if(this.collisionBox.left <= max)
-													this.vel.x = 0;
-											} else { this.vel.x = 0; }
-											break;
-									}
-								} else if(collision.xprop.isForwardslashSolid) {
-									var x = collision.x < 0 ? this.collisionBox.left : this.collisionBox.right;
-									var y = collision.x < 0 ? this.collisionBox.top : this.collisionBox.bottom;
-									
-									var yDiff = y - collision.xtile.top;
-									var maxX = collision.xtile.width - yDiff + collision.xtile.left;
-									
-									if((collision.x < 0 && x <= maxX) || (collision.x > 0 && x >= maxX))
-										this.vel.x = 0;
-								} else if(collision.xprop.isBackslashSolid) {
-									var x = collision.x < 0 ? this.collisionBox.left : this.collisionBox.right;
-									var y = collision.x < 0 ? this.collisionBox.bottom : this.collisionBox.top;
-									
-									var yDiff = y - collision.xtile.top;
-									var maxX = collision.xtile.left + yDiff;
-									
-									if((collision.x < 0 && x <= maxX) || (collision.x > 0 && x >= maxX))
-										this.vel.x = 0;
-								} else {
-									this.vel.x = 0;
-								}
-							} else
 							// can walk through the platform & ladder
 							if (!collision.xprop.isPlatform && !collision.xprop.isLadder) {
 								if (collision.xprop.isBreakable	&& this.canBreakTile) {
@@ -8841,21 +8582,7 @@
 				L_SLOPE : "lslope",
 				R_SLOPE : "rslope",
 				LADDER : "ladder",
-				BREAKABLE : "breakable",
-				VERTICAL_SOLID : "vsolid",
-				HORIZONTAL_SOLID : "hsolid",
-				L_SLOPE_INVERTED : "ltslope",
-				R_SLOPE_INVERTED : "rtslope",
-				NW_SOLID : "nw",
-				NE_SOLID : "ne",
-				SW_SOLID : "sw",
-				SE_SOLID : "se",
-				NW_QUAD_SOLID : "qnw",
-				NE_QUAD_SOLID : "qne",
-				SW_QUAD_SOLID : "qsw",
-				SE_QUAD_SOLID : "qse",
-				FORWARDSLASH_SOLID : "fssolid",
-				BACKSLASH_SOLID : "bssolid"
+				BREAKABLE : "breakable"
 			};
 
 			// tile properties
@@ -8886,15 +8613,7 @@
 				isLeftSlope : false,
 				isRightSlope : false,
 				isLadder : false,
-				isBreakable : false,
-				isInvertedSlope : false,
-				isQuadrantSolid: false,
-				isCornerSolid: false,
-				corner: null,
-				isVerticalSolid: false,
-				isHorizontalSolid: false,
-				isBackslashSolid: false,
-				isForwardslashSolid : false
+				isBreakable : false
 			};
 		},
 		
@@ -9011,41 +8730,17 @@
 				// check what we found and adjust property
 				tileProp.isSolid = tileProp.type ? tileProp.type.toLowerCase() === this.type.SOLID : false;
 				tileProp.isPlatform = tileProp.type ? tileProp.type.toLowerCase() === this.type.PLATFORM : false;
-				tileProp.isLeftSlope = tileProp.type ? tileProp.type.toLowerCase() === this.type.L_SLOPE || tileProp.type.toLowerCase() === this.type.L_SLOPE_INVERTED : false;
-				tileProp.isRightSlope = tileProp.type ? tileProp.type.toLowerCase() === this.type.R_SLOPE || tileProp.type.toLowerCase() === this.type.R_SLOPE_INVERTED	: false;
+				tileProp.isLeftSlope = tileProp.type ? tileProp.type.toLowerCase() === this.type.L_SLOPE : false;
+				tileProp.isRightSlope = tileProp.type ? tileProp.type.toLowerCase() === this.type.R_SLOPE	: false;
 				tileProp.isBreakable = tileProp.type ? tileProp.type.toLowerCase() === this.type.BREAKABLE : false;
 				tileProp.isLadder = tileProp.type ? tileProp.type.toLowerCase() === this.type.LADDER : false;
 				tileProp.isSlope = tileProp.isLeftSlope || tileProp.isRightSlope;
-				tileProp.isInvertedSlope = tileProp.type.toLowerCase() === this.type.L_SLOPE_INVERTED || tileProp.type.toLowerCase() === this.type.R_SLOPE_INVERTED;
-				tileProp.corner = null;
-				tileProp.isCornerSolid = false;
-				tileProp.isQuadrantSolid = false;
-				tileProp.isVerticalSolid = false;
-				tileProp.isHorizontalSolid = false;
-				
-				switch(tileProp.type.toLowerCase()) {
-					case this.type.NW_SOLID: tileProp.corner = "nw"; tileProp.isCornerSolid = true; break;
-					case this.type.SW_SOLID: tileProp.corner = "sw"; tileProp.isCornerSolid = true; break;
-					case this.type.NE_SOLID: tileProp.corner = "ne"; tileProp.isCornerSolid = true; break;
-					case this.type.SE_SOLID: tileProp.corner = "se"; tileProp.isCornerSolid = true; break;
-					case this.type.NW_QUAD_SOLID: tileProp.corner = "nw"; tileProp.isQuadrantSolid = true; break;
-					case this.type.SW_QUAD_SOLID: tileProp.corner = "sw"; tileProp.isQuadrantSolid = true; break;
-					case this.type.NE_QUAD_SOLID: tileProp.corner = "ne"; tileProp.isQuadrantSolid = true; break;
-					case this.type.SE_QUAD_SOLID: tileProp.corner = "se"; tileProp.isQuadrantSolid = true; break;
-					case this.type.VERTICAL_SOLID: tileProp.isVerticalSolid = true; break;
-					case this.type.HORIZONTAL_SOLID: tileProp.isHorizontalSolid = true; break;
-					case this.type.FORWARDSLASH_SOLID: tileProp.isForwardslashSolid = true; break;
-					case this.type.BACKSLASH_SOLID: tileProp.isBackslashSolid = true; break;
-				}
-				
-				tileProp.isSolid = tileProp.isSolid || tileProp.isCornerSolid || tileProp.isQuadrantSolid 
-									|| tileProp.isVerticalSolid || tileProp.isHorizontalSolid 
-									|| tileProp.isBackslashSolid || tileProp.isForwardslashSolid;
-				
+
 				// ensure the collidable flag is correct
 				tileProp.isCollidable = tileProp.isSolid || tileProp.isPlatform
 										|| tileProp.isSlope || tileProp.isLadder
 										|| tileProp.isBreakable;
+
 			}
 		},
 		
@@ -9899,9 +9594,7 @@
 			
 			// check for y movement
 			// left, y corner
-			if(y <= 0 || y >= this.realheight) {
-				res.y = pv.y;
-			} else if ( pv.y != 0 ) {
+			if ( pv.y != 0 ) {
 				res.ytile = this.getTile((pv.x < 0) ? ~~obj.left : Math.ceil(obj.right - 1), y);
 				if (res.ytile && this.tileset.isTileCollidable(res.ytile.tileId)) {
 					res.y = pv.y || 1;
