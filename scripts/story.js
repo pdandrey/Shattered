@@ -16,7 +16,32 @@ Shattered.Story = (function() {
 		*/
 		
 		function prologue(levelID) {
-			if(levelID === 'prologue-augustun') {
+			if(levelID === 'prologue-battle' && ret.Scene === 1) {
+				var pos = me.Vector2d.toXY(13, 3);
+				var clair = new Shattered.Objects.Clair(pos.x, pos.y, { name: "clair", direction: 'right' });
+				pos = me.Vector2d.toXY(5, 11);
+				var doug = new Shattered.Objects.NPC(pos.x, pos.y, { name: "doug", direction: "left", pathkey: 'none' });
+				pos = me.Vector2d.toXY(4, 11);
+				var shepard = new Shattered.Objects.NPC(pos.x-16, pos.y, { name: 'shepard', direction: 'right', pathkey: 'none' });
+				var z = me.game.currentLevel.objectGroups[0].z;
+				
+				me.game.add(clair, z);
+				me.game.add(doug, z);
+				me.game.add(shepard, z);
+				
+				var sheepCoords = [ [1,5], [3, 3], [10,10], [13,7], [7,7], [10,3] ];
+				
+				for(var i=0; i<sheepCoords.length; ++i) {
+					pos = me.Vector2d.toXY(sheepCoords[i][0], sheepCoords[i][1]);
+					me.game.add(new Shattered.Objects.NPC(pos.x, pos.y, { name: 'sheep', pathkey: 'none', velocity: 2 }), z);
+				}
+				
+				pos = me.Vector2d.toXY(3,3);
+				me.game.add(new Shattered.Objects.NPC(pos.x, pos.y, { name: 'sheep', pathkey: 'none', velocity: 2 }), z);
+				
+				me.game.sort();
+				
+			} else if(levelID === 'prologue-augustun') {
 				if(ret.Scene === 1) {
 					console.log("starting scene 1 ");
 					var clair = new Shattered.Objects.Clair(4 * Shattered.Settings.tileSize, 42 * Shattered.Settings.tileSize, { name: "clair"});
@@ -163,7 +188,7 @@ Shattered.Story = (function() {
 		onLevelLoaded: onLevelLoaded,
 		onNpcAction: onNpcAction,
 		Episode: Shattered.Enums.Episodes.Prologue,
-		Scene: 2
+		Scene: 1
 	};
 	
 	return ret;

@@ -136,6 +136,7 @@ var jsApp	=
 		me.entityPool.add("npc", Shattered.Objects.NPC);
 		me.entityPool.add("npc_link", Shattered.Objects.NPC_Link);
 		me.entityPool.add("chest", Shattered.Objects.Chest);
+		me.entityPool.add("tiletester", Shattered.Objects.TileTester);
 
 		// enable the keyboard
 		me.input.bindKey(me.input.KEY.LEFT,  "left");
@@ -160,7 +161,7 @@ Shattered.Objects.PlayScreen = me.ScreenObject.extend({
 		me.game.add(Shattered.Game.Dialog, Shattered.Game.Dialog.z);
 		
 		me.game.HUD.addItem("dialog", Shattered.Game.Dialog.getHUD());
-		me.levelDirector.loadLevel("Prologue-Augustun");
+		me.levelDirector.loadLevel("prologue-battle");
 		
 		me.game.sort();
 	},
