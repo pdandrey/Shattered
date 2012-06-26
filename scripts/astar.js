@@ -52,9 +52,14 @@ Shattered.Pathing.AStar = (function() {
 	
 	Shattered.Objects.TileTester = me.InvisibleEntity.extend({
 		init: function(x, y, settings) {
-			
+			settings = settings || {};
+			settings.collidable = false;
+			settings.name = 'tiletester';
 			this.parent(x, y, settings);
-			this.updateColRect(4, 4, 26, 26);
+			this.collidable = false;
+			this.collisionBox.width = me.game.currentLevel.tilewidth;
+			this.collisionBox.height = me.game.currentLevel.tileheight;
+			//this.updateColRect(4, 4, 26, 26);
 		}
 	});
 	
@@ -75,8 +80,8 @@ Shattered.Pathing.AStar = (function() {
 		
 		var tileTester = me.game.getEntityByName("tiletester");
 		if(tileTester.length === 0) {
-			tileTester = new Shattered.Objects.TileTester(0, 0, { name: 'tileTester', collidable: true });
-			me.game.addEntity(tileTester, me.game.currentLevel.objectGroups[0].z);
+			tileTester = new Shattered.Objects.TileTester(0, 0, { });
+			me.game.add(tileTester, me.game.currentLevel.objectGroups[0].z);
 		} else {
 			tileTester = tileTester[0];
 		}
@@ -85,7 +90,7 @@ Shattered.Pathing.AStar = (function() {
 		
 		var current = null;
 		
-		var loopMax = 30;
+		var loopMax = 10000;
 		var loop = 0;
 		var velocity = obj.maxVel;
 		
@@ -107,8 +112,8 @@ Shattered.Pathing.AStar = (function() {
 				break;
 			}
 			
-			for(var x = Math.max(0, start.x-velocity.x); x <= Math.min(me.game.currentLevel.width, start.x+velocity.x); ++x) {
-				for(var y = Math.max(0, start.y-velocity.y); y <= Math.min(me.game.currentLevel.height, start.y+velocity.y); ++y) {
+			for(var x = Math.max(0, current.location.x-velocity.x*2); x <= Math.min(me.game.currentLevel.realwidth, current.location.x+velocity.x*2); x+=velocity.x*2) {
+				for(var y = Math.max(0, current.location.y-velocity.y*2); y <= Math.min(me.game.currentLevel.realheight, current.location.y+velocity.y*2); y+=velocity.y*2) {
 					
 					if(x === current.location.x && y === current.location.y) {
 						continue;
@@ -119,6 +124,7 @@ Shattered.Pathing.AStar = (function() {
 					
 					if(setInvalidNodes[loc.toString()]) {
 						// this is a known solid node
+						//console.log("%s is invalid %s", loc.toString(), setInvalidNodes[loc.toString()]);
 						continue;
 					}
 					

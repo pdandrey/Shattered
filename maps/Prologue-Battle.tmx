@@ -22,17 +22,32 @@
   <image source="../images/metatiles32x32.png" width="96" height="224"/>
   <tile id="0">
    <properties>
-    <property name="type" value="solid"/>
+    <property name="type" value="platform"/>
+   </properties>
+  </tile>
+  <tile id="1">
+   <properties>
+    <property name="type" value="qnw"/>
    </properties>
   </tile>
   <tile id="2">
    <properties>
-    <property name="type" value="slopeleft"/>
+    <property name="type" value="qne"/>
    </properties>
   </tile>
   <tile id="3">
    <properties>
-    <property name="type" value="sloperight"/>
+    <property name="type" value="ladder"/>
+   </properties>
+  </tile>
+  <tile id="4">
+   <properties>
+    <property name="type" value="qsw"/>
+   </properties>
+  </tile>
+  <tile id="5">
+   <properties>
+    <property name="type" value="qse"/>
    </properties>
   </tile>
   <tile id="6">
@@ -40,9 +55,29 @@
     <property name="type" value="hsolid"/>
    </properties>
   </tile>
+  <tile id="7">
+   <properties>
+    <property name="type" value="se"/>
+   </properties>
+  </tile>
+  <tile id="8">
+   <properties>
+    <property name="type" value="sw"/>
+   </properties>
+  </tile>
   <tile id="9">
    <properties>
     <property name="type" value="vsolid"/>
+   </properties>
+  </tile>
+  <tile id="10">
+   <properties>
+    <property name="type" value="ne"/>
+   </properties>
+  </tile>
+  <tile id="11">
+   <properties>
+    <property name="type" value="nw"/>
    </properties>
   </tile>
   <tile id="12">
@@ -53,6 +88,11 @@
   <tile id="15">
    <properties>
     <property name="type" value="fssolid"/>
+   </properties>
+  </tile>
+  <tile id="18">
+   <properties>
+    <property name="type" value="bssolid"/>
    </properties>
   </tile>
  </tileset>

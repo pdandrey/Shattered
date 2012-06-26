@@ -27,17 +27,14 @@ Shattered.Story = (function() {
 				
 				me.game.add(clair, z);
 				me.game.add(doug, z);
-				me.game.add(shepard, z);
+				//me.game.add(shepard, z);
 				
 				var sheepCoords = [ [1,5], [3, 3], [10,10], [13,7], [7,7], [10,3] ];
 				
 				for(var i=0; i<sheepCoords.length; ++i) {
 					pos = me.Vector2d.toXY(sheepCoords[i][0], sheepCoords[i][1]);
-					me.game.add(new Shattered.Objects.NPC(pos.x, pos.y, { name: 'sheep', pathkey: 'none', velocity: 2 }), z);
+					//me.game.add(new Shattered.Objects.NPC(pos.x, pos.y, { name: 'sheep', pathkey: 'none', velocity: 2 }), z);
 				}
-				
-				pos = me.Vector2d.toXY(3,3);
-				me.game.add(new Shattered.Objects.NPC(pos.x, pos.y, { name: 'sheep', pathkey: 'none', velocity: 2 }), z);
 				
 				me.game.sort();
 				
