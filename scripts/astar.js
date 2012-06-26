@@ -62,13 +62,14 @@ Shattered.Pathing.AStar = (function() {
 	var setClosedNodes = {};
 	var stackDirections = [];
 	
-	function Path(/** me.Vector2d */ start, /** me.Vector2d */ destination, /* Int */ distance) {
+	function Path(/** me.ObjectEntity */ obj, /** me.Vector2d */ destination, /* Int */ distance) {
+		var start = obj.collisionBox.pos;
 		console.log("Pathing from %s to %s", start.toString(), destination.toString());
 		lstOpenNodes = [];
 		setClosedNodes = {};
 		var setInvalidNodes = {};
 		
-		distance = distance || 2;
+		distance = distance || me.game.currentLevel.tilewidth / 2;
 		
 		var destinationFound = false;
 		
@@ -86,7 +87,7 @@ Shattered.Pathing.AStar = (function() {
 		
 		var loopMax = 30;
 		var loop = 0;
-		var velocity = new me.Vector2d(1, 1);
+		var velocity = obj.maxVel;
 		
 		while(!destinationFound && lstOpenNodes.length > 0) {
 			
@@ -106,8 +107,8 @@ Shattered.Pathing.AStar = (function() {
 				break;
 			}
 			
-			for(var x = Math.max(0, start.x-1); x <= Math.min(me.game.currentLevel.width, start.x+1); ++x) {
-				for(var y = Math.max(0, start.y-1); y <= Math.min(me.game.currentLevel.height, start.y+1); ++y) {
+			for(var x = Math.max(0, start.x-velocity.x); x <= Math.min(me.game.currentLevel.width, start.x+velocity.x); ++x) {
+				for(var y = Math.max(0, start.y-velocity.y); y <= Math.min(me.game.currentLevel.height, start.y+velocity.y); ++y) {
 					
 					if(x === current.location.x && y === current.location.y) {
 						continue;
@@ -143,7 +144,7 @@ Shattered.Pathing.AStar = (function() {
 							}
 						} else {
 							// test collision with the map
-							tileTester.pos.setV(loc.toXY());
+							tileTester.pos.setV(loc);
 							var collision = me.game.collisionMap.checkCollision(tileTester.collisionBox, velocity);
 							if(!(collision && ( (collision.xprop && collision.xprop.isSolid) || (collision.yprop && collision.isSolid)))) {
 								// it's not a solid tile.  Is there something standing in the way?
