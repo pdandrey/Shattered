@@ -238,6 +238,7 @@ Shattered.Pathing = {
 		},
 		
 		movePath: function(npc, path) {
+		
 			if(!Array.isArray(path))
 				throw "path is not an array";
 			
@@ -256,28 +257,47 @@ Shattered.Pathing = {
 			if(x > npc.right) {
 				npc.direction = 'right';
 				npc.vel.x += npc.accel.x * me.timer.tick;
-				npc.vel.y = 0;
+				//npc.vel.y = 0;
 			} else if(x < npc.left) {
 				npc.direction = 'left';
 				npc.vel.x -= npc.accel.x * me.timer.tick;
-				npc.vel.y = 0;
-			} else if(y < npc.top) {
+				//npc.vel.y = 0;
+			} else {
+			    npc.vel.x = 0;
+			}
+		        
+			if(y < npc.top) {
 				npc.direction = 'up';
-				npc.vel.x = 0;
+				//npc.vel.x = 0;
 				npc.vel.y -= npc.accel.y * me.timer.tick;
 			} else if(y > npc.bottom) {
 				npc.direction = 'down';
-				npc.vel.x = 0;
+				//npc.vel.x = 0;
 				npc.vel.y += npc.accel.y * me.timer.tick;
 			} else {
-				npc.vel.x = 0;
+				//npc.vel.x = 0;
 				npc.vel.y = 0;
-				npc.direction = 'down';
-				npc.pathIndex++;
-				npc.isStanding = true;
-				return false;
+				//npc.direction = 'down';
+				//npc.pathIndex++;
+				//npc.isStanding = true;
+				//return false;
+			}
+			
+			if(npc.vel.x === 0 && npc.vel.y === 0) {
+			    npc.pathIndex++;    
 			}
 			npc.isStanding = false;
+			return true;
+		}
+	},
+	
+	followPath: function(npc) {
+		if(!npc.pathTo) return false;
+		if(!Shattered.Pathing.Global.movePath(npc, npc.pathTo)) {
+			console.log("finished pathing");
+			npc.pathTo = null;
+			return false;
+		} else {
 			return true;
 		}
 	},

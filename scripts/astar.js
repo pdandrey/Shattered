@@ -68,6 +68,7 @@ Shattered.Pathing.AStar = (function() {
 	var stackDirections = [];
 	
 	function Path(/** me.ObjectEntity */ obj, /** me.Vector2d */ destination, /* Int */ distance) {
+		console.time("A*");
 		var start = obj.collisionBox.pos;
 		console.log("Pathing from %s to %s", start.toString(), destination.toString());
 		lstOpenNodes = [];
@@ -98,6 +99,7 @@ Shattered.Pathing.AStar = (function() {
 			
 			if(loop > loopMax) {
 				console.log("loop max reached");
+				console.timeEnd("A*");
 				return null;
 			}
 			
@@ -105,7 +107,7 @@ Shattered.Pathing.AStar = (function() {
 			
 			current = GetLowestOpenNode();
 			
-			console.log("Lowest Node: %s", current.aaa);
+			//console.log("Lowest Node: %s", current.aaa);
 			
 			if(current.distance < distance) {
 				destinationFound = true;
@@ -184,13 +186,15 @@ Shattered.Pathing.AStar = (function() {
 		
 		if(destinationFound) {
 			while(current != null) {
-				stackDirections.push(current);
+				stackDirections.push({x: current.location.x, y: current.location.y });
 				current = current.parent;
 			}
-			return stackDirections;
+			console.timeEnd("A*");
+			return stackDirections.reverse();
 		}
 		
 		console.log("Destination not found");
+		console.timeEnd("A*");
 		return null;
 	}
 	
