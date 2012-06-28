@@ -3,6 +3,9 @@
 var v = null;
 var invis = null;
 
+var doug;
+var tt;
+
 var jsApp	= 
 {	levelLoaded: function(levelId) {
 		Shattered.Story.onLevelLoaded(levelId);
@@ -23,8 +26,12 @@ var jsApp	=
 		invis = new me.InvisibleEntity(v.x, v.y, { name: 'me.InvisibleEntity', collidable: true });
 		v = invis.pos;
 		invis.updateColRect(0, 32, 0, 32);
-		me.game.addEntity(invis, 7);
+		me.game.addEntity(invis, me.game.currentLevel.objectGroups[0].z);
 		me.game.sort();
+		
+		doug = me.game.getEntityByName("doug")[0];
+		tt = new Shattered.Objects.TileTester(0, 0, { });
+		me.game.add(tt, me.game.currentLevel.objectGroups[0].z);
 	},
 	
 	onload: function() {

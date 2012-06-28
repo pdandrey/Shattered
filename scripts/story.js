@@ -22,7 +22,8 @@ Shattered.Story = (function() {
 				pos = me.Vector2d.toXY(5, 11);
 				var doug = new Shattered.Objects.NPC(pos.x, pos.y, { name: "doug", direction: "left", pathkey: 'none' });
 				pos = me.Vector2d.toXY(4, 11);
-				var shepard = new Shattered.Objects.NPC(pos.x-16, pos.y, { name: 'shepard', direction: 'right', pathkey: 'none' });
+				var shepard = new Shattered.Objects.NPC(pos.x, pos.y, { name: 'shepard', direction: 'right', pathkey: 'none' });
+				
 				var z = me.game.currentLevel.objectGroups[0].z;
 				
 				me.game.add(clair, z);

@@ -9,6 +9,7 @@ Shattered.Objects.Clair = me.ObjectEntity.extend({
 		settings.spritewidth = sprite.width;
 		settings.collidable = true;
 		
+		x -= sprite.collision.x;
 		this.parent(x, y, settings);
 
 		this.portraitKey = "clair";

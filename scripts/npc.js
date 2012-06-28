@@ -57,11 +57,16 @@ Shattered.Objects.NPC = me.ObjectEntity.extend({
 		settings.spritewidth = settings.spritewidth || settings.sprite.width;
 		settings.spriteheight = settings.spriteheight || settings.sprite.height;
 		
-		if(typeof(settings.collidable) == "undefined")
+		if(typeof(settings.collidable) === "undefined")
 			settings.collidable = true;
 		
 		settings.velocity = settings.velocity || 3;
 		settings.delay = settings.delay || 100;
+		
+		if(settings.sprite.collision) {
+			x -= settings.sprite.collision.x;
+			//y -= settings.sprite.collision.y;
+		}
 		
 		this.parent(x,y,settings);
 		this.setVelocity(settings.velocity, settings.velocity);
@@ -167,6 +172,16 @@ Shattered.Objects.NPC = me.ObjectEntity.extend({
 				if(res) {
 					//console.log("collide with %s", res.type);
 					this.pos.copy(oldPos);
+					if((res.x < 0 && this.vel.x < 0) || (res.x > 0 && this.vel.x > 0)) {
+						this.vel.x = 0;
+					}
+					
+					if((res.y < 0 && this.vel.y < 0) || (res.y > 0 && this.vel.y > 0)) {
+						this.vel.y = 0;
+					}
+					
+					if(this.vel.x !== 0 || this.vel.y !== 0)
+						this.updateMovement();
 				}
 			} catch(err) {
 				this.vel.x = 0;
@@ -251,29 +266,39 @@ Shattered.Pathing = {
 				return false;
 			}
 			
-			var x = path[npc.pathIndex].x || npc.x;
-			var y = path[npc.pathIndex].y || npc.y;
+			var x = path[npc.pathIndex].x || npc.collisionBox.pos.x;
+			var y = path[npc.pathIndex].y || npc.collisionBox.pos.y;
 			
-			if(x > npc.right) {
+			if(x > npc.collisionBox.left) {
 				npc.direction = 'right';
 				npc.vel.x += npc.accel.x * me.timer.tick;
-				//npc.vel.y = 0;
-			} else if(x < npc.left) {
+				
+				if(npc.collisionBox.left + npc.vel.x > x) {
+					npc.vel.x = x - npc.collisionBox.left;
+				}
+			} else if(x < npc.collisionBox.left) {
 				npc.direction = 'left';
 				npc.vel.x -= npc.accel.x * me.timer.tick;
-				//npc.vel.y = 0;
+				
+				if(npc.collisionBox.left + npc.vel.x < x) {
+					npc.vel.x = x - npc.collisionBox.left;
+				}
 			} else {
 			    npc.vel.x = 0;
 			}
 		        
-			if(y < npc.top) {
+			if(y < npc.collisionBox.top) {
 				npc.direction = 'up';
-				//npc.vel.x = 0;
 				npc.vel.y -= npc.accel.y * me.timer.tick;
-			} else if(y > npc.bottom) {
+				if(npc.collisionBox.top + npc.vel.y < y) {
+					npc.vel.y = y - npc.collisionBox.top;
+				}
+			} else if(y > npc.collisionBox.top) {
 				npc.direction = 'down';
-				//npc.vel.x = 0;
 				npc.vel.y += npc.accel.y * me.timer.tick;
+				if(npc.collisionBox.top + npc.vel.y > y) {
+					npc.vel.y = y - npc.collisionBox.top;
+				}
 			} else {
 				//npc.vel.x = 0;
 				npc.vel.y = 0;
@@ -355,5 +380,8 @@ Shattered.Objects.NPC_Link = me.InvisibleEntity.extend({
 Shattered.Objects.Chest = me.ObjectEntity.extend({
 	init: function(x,y,settings) {
 		this.parent(x,y,settings);
+	},
+	update: function() {
+		var i = 0;
 	}
 });

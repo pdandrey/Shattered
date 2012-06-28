@@ -57,29 +57,49 @@ Shattered.Pathing.AStar = (function() {
 			settings.name = 'tiletester';
 			this.parent(x, y, settings);
 			this.collidable = false;
-			this.collisionBox.width = me.game.currentLevel.tilewidth;
-			this.collisionBox.height = me.game.currentLevel.tileheight;
-			//this.updateColRect(4, 4, 26, 26);
+			//this.collisionBox.width = me.game.currentLevel.tilewidth;
+			//this.collisionBox.height = me.game.currentLevel.tileheight;
+			this.updateColRect(4, 26, 4, 26);
+		}, 
+		showPath: function(path, timeout) {
+			var idx = 0;
+			var ttInterval = setInterval(setTT, timeout || 1000);
+			var self = this;
+			
+			function setTT() {
+				if(idx >= path.length) {
+					clearInterval(ttInterval);
+					return;
+				}
+				self.pos.setV(me.Vector2d.toXY(path[idx].x, path[idx].y));
+				++idx;
+			}
 		}
 	});
 	
 	var lstOpenNodes = [];
 	var setClosedNodes = {};
-	var stackDirections = [];
+	var setSolidNodes = {};
+	var setEntityNodes = {};
+	var tileTester = null;
+	var velocity = null;
 	
 	function Path(/** me.ObjectEntity */ obj, /** me.Vector2d */ destination, /* Int */ distance) {
 		console.time("A*");
-		var start = obj.collisionBox.pos;
+		var start = me.Vector2d.toTile(obj.collisionBox.left, obj.collisionBox.top)
+		destination = destination.toTile();
+		
 		console.log("Pathing from %s to %s", start.toString(), destination.toString());
 		lstOpenNodes = [];
 		setClosedNodes = {};
-		var setInvalidNodes = {};
 		
-		distance = distance || me.game.currentLevel.tilewidth / 2;
+		setEntityNodes = {};
+			
+		distance = distance || 1; //me.game.currentLevel.tilewidth / 2;
 		
 		var destinationFound = false;
 		
-		var tileTester = me.game.getEntityByName("tiletester");
+		tileTester = me.game.getEntityByName("tiletester");
 		if(tileTester.length === 0) {
 			tileTester = new Shattered.Objects.TileTester(0, 0, { });
 			me.game.add(tileTester, me.game.currentLevel.objectGroups[0].z);
@@ -93,7 +113,7 @@ Shattered.Pathing.AStar = (function() {
 		
 		var loopMax = 10000;
 		var loop = 0;
-		var velocity = obj.maxVel;
+		velocity = obj.maxVel;
 		
 		while(!destinationFound && lstOpenNodes.length > 0) {
 			
@@ -107,74 +127,39 @@ Shattered.Pathing.AStar = (function() {
 			
 			current = GetLowestOpenNode();
 			
-			//console.log("Lowest Node: %s", current.aaa);
-			
 			if(current.distance < distance) {
 				destinationFound = true;
 				break;
 			}
 			
-			for(var x = Math.max(0, current.location.x-velocity.x*2); x <= Math.min(me.game.currentLevel.realwidth, current.location.x+velocity.x*2); x+=velocity.x*2) {
-				for(var y = Math.max(0, current.location.y-velocity.y*2); y <= Math.min(me.game.currentLevel.realheight, current.location.y+velocity.y*2); y+=velocity.y*2) {
-					
-					if(x === current.location.x && y === current.location.y) {
-						continue;
+			var scan = scanAdjacent(current);
+			
+			while(scan.length > 0) {
+				var loc = scan.pop();
+				
+				var lookingAt = new Node(loc, destination, current, 1);
+				
+				// is the tile already been visited?
+				var isClosed = setClosedNodes[loc.toString()];
+				
+				if(isClosed) {		
+					// We've been here before, but is the new value lower?
+					if(lookingAt.total < isClosed.total) {
+						isClosed.cost = lookingAt.cost;
+						isClosed.parent = lookingAt.parent;
 					}
+				} else {
+					// is it in the open list?
+					var openNode = ScanOpenForNode(lookingAt);
 					
-					// is the tlie location valid?
-					var loc = new me.Vector2d(x, y);
-					
-					if(setInvalidNodes[loc.toString()]) {
-						// this is a known solid node
-						//console.log("%s is invalid %s", loc.toString(), setInvalidNodes[loc.toString()]);
-						continue;
-					}
-					
-					var lookingAt = new Node(loc, destination, current, 1);
-					
-					// is the tile already been visited?
-					var isClosed = setClosedNodes[loc.toString()];
-					
-					if(isClosed) {		
-						// We've been here before, but is the new value lower?
-						if(lookingAt.total < isClosed.total) {
-							isClosed.cost = lookingAt.cost;
-							isClosed.parent = lookingAt.parent;
+					if(openNode) {
+						if(lookingAt.total < openNode.total) {
+							openNode.cost = lookingAt.cost;
+							openNode.parent = lookingAt.parent;
 						}
 					} else {
-						// is it in the open list?
-						var openNode = ScanOpenForNode(lookingAt);
-						
-						if(openNode) {
-							if(lookingAt.total < openNode.total) {
-								openNode.cost = lookingAt.cost;
-								openNode.parent = lookingAt.parent;
-							}
-						} else {
-							// test collision with the map
-							tileTester.pos.setV(loc);
-							var collision = me.game.collisionMap.checkCollision(tileTester.collisionBox, velocity);
-							if(!(collision && ( (collision.xprop && collision.xprop.isSolid) || (collision.yprop && collision.isSolid)))) {
-								// it's not a solid tile.  Is there something standing in the way?
-								collision = me.game.collide(tileTester);
-								if(!collision) {
-									// it's a free tile
-									//console.log("free tile at %d, %d", loc.x, loc.y);
-									lstOpenNodes.push(lookingAt);
-									lstOpenNodes.sort(Node.TotalCompare);
-								} else {
-									// something is there.
-									//console.log("entity collision");
-									setInvalidNodes[loc.toString()] = "entity";
-									//console.log("%s = entity", loc.toString());
-								}
-							} else {
-								// solid tile.  close the node
-								//console.log("solid collision");
-								setInvalidNodes[loc.toString()] = "solid";
-								//console.log("%s = solid", loc.toString());
-							}
-						}
+						lstOpenNodes.push(lookingAt);
+						lstOpenNodes.sort(Node.TotalCompare);
 					}
 				}
 			}
@@ -182,20 +167,117 @@ Shattered.Pathing.AStar = (function() {
 		
 		lstOpenNodes = [];
 		setClosedNodes = {};
-		setInvalidNodes = {};
+		var stackDirections = [];
 		
 		if(destinationFound) {
 			while(current != null) {
-				stackDirections.push({x: current.location.x, y: current.location.y });
+				stackDirections.push(current.location.toXY());
 				current = current.parent;
 			}
 			console.timeEnd("A*");
+			//stackDirections.pop();
 			return stackDirections.reverse();
 		}
 		
 		console.log("Destination not found");
 		console.timeEnd("A*");
 		return null;
+	}
+	
+	function removeAdjacent(scan, d) {
+		if(d.length === 1) {
+			switch(d) {
+				case "n":
+				case "s":
+					scan[d + "e"] = null;
+					scan[d + "w"] = null;
+					break;
+					
+				case "e":
+				case "w":
+					scan["n" + d] = null;
+					scan["s" + d] = null;
+			}
+		}
+	}
+	
+	function scanAdjacent(current) {
+		var nodes = [];
+		var ns = [];
+		var ew = [];
+		
+		// is the tlie location valid?
+		var loc = new me.Vector2d(current.location.x, current.location.y-1);
+		if(test(loc)) {
+			nodes.push(loc);
+			ns.push("n");
+		}
+		
+		loc = new me.Vector2d(current.location.x, current.location.y+1);
+		if(test(loc)) {
+			nodes.push(loc);
+			ns.push("s");
+		}
+		loc = new me.Vector2d(current.location.x-1, current.location.y);
+		if(test(loc)) {
+			nodes.push(loc);
+			ew.push("w");
+		}
+		loc = new me.Vector2d(current.location.x+1, current.location.y);
+		if(test(loc)) {
+			nodes.push(loc);
+			ew.push("e");
+		}
+		
+		// console.log("%s, %s", ns.join(", "), ew.join(", "));
+		
+		var corners = {
+			nw: new me.Vector2d(current.location.x-1, current.location.y-1),
+			ne: new me.Vector2d(current.location.x+2, current.location.y-1),
+			sw: new me.Vector2d(current.location.x-1, current.location.y+1),
+			se: new me.Vector2d(current.location.x+1, current.location.y+1)
+		}
+		
+		// if(ns.length > 0 && ew.length > 1) {
+			// for(var x = 0; x < ew.length; ++x) {
+				// for(var y=0; y<ns.length; ++y) {
+					// if(test(corners[ns[y] + ew[x]])) {
+						// nodes.push(corners[ns[y] + ew[x]]);
+						// console.log(ns[y] + ew[x]);
+					// }
+				// }
+			// }
+		// }
+		
+		return nodes;
+		
+		function test(loc) {
+			if(setSolidNodes[loc.toString()] || setEntityNodes[loc.toString()]) {
+				// this is a known solid node
+				return false;
+			}
+			
+			// test collision with the map
+			tileTester.pos.setV(loc.toXY());
+			var collision = me.game.collisionMap.checkCollision(tileTester.collisionBox, velocity);
+			if(!(collision && ( (collision.xprop && collision.xprop.isSolid) || (collision.yprop && collision.isSolid)))) {
+				// it's not a solid tile.  Is there something standing in the way?
+				collision = me.game.collide(tileTester);
+				if(!collision) {
+					// it's a free tile
+					return true;
+				} else {
+					// something is there.
+					setEntityNodes[loc.toString()] = "entity";
+					return false;
+				}
+			} else {
+				// solid tile.  close the node
+				setSolidNodes[loc.toString()] = "solid";
+				return false;
+			}
+		}
+			
 	}
 	
 	function AddOpenNode(node)
