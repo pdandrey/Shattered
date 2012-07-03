@@ -2,38 +2,77 @@
 
 Shattered.Battle = (function() {
 	
+	var participants = [];
 	var queue = [];
+	var queueMax = 10;
+	var actionQueue = [];
 	var partyCount = 0;
 	var enemyCount = 0;
+	var current = null;
 	
 	function start(lstEnemies) {
 		var party = Shattered.Party.Get();
 		
 		for(var i=0; i<lstEnemies.length; ++i)
-			lstEnemies.type = "Enemy";
+			lstEnemies[i].type = "Enemy";
 		
-		queue = lstEnemies.concat(party);
+		participants = lstEnemies.concat(party);
 		
-		for(var i=0; i< queue.length; ++i)
-			queue[i].initative = Number.random(0, 10) + queue[i].Stats.Speed;
+		// for(var i=0; i< participants.length; ++i)
+			// participants[i].ready = Number.random(0, 50);
 		
-		queue.sort(queueSort);
+		buildQueue();
 		
 		partyCount = party.length;
 		enemyCount = lstEnemies.length;
 	}
 	
+	function buildQueue() {
+		queue.length = 0;
+		
+		var turn = 1;
+		while(queue.length < queueMax) {
+			for(var idx = 0; idx < participants.length; ++idx) {
+				var ready = participants[idx].testTick(turn);
+				if(ready >= 0)
+					queue.push({ idx: idx, value: ready });
+			}
+			++turn;
+		}
+		
+		queue.sort(queueSort);
+	}
+	
 	function getOrder() {
-		return queue.concat();
+		var tmp = [];
+		for(var i=0; i<queue.length; ++i)
+			tmp.push(participants[queue[i].idx].name);
+		return tmp;
 	}
 	
 	function getCurrent() {
-		return queue[0];
+		return current;
 	}
 	
 	function next() {
-		var mob = queue.shift();
-		queue.push(mob);
+		while(actionQueue.length === 0) {
+			for(var i=0; i<participants.length; ++i) {
+				var ready = participants[i].tick();
+				if(ready >= 0) {
+					actionQueue.push({ idx: i, value: ready });
+				}
+			}
+			
+			if(actionQueue.length) {
+				actionQueue.sort(queueSort);
+			}
+		}
+		
+		current = participants[actionQueue[0].idx];
+		actionQueue.shift();
+		buildQueue();
+		
+		return current;
 	}
 	
 	function end() {
@@ -49,7 +88,7 @@ Shattered.Battle = (function() {
 	}
 	
 	function queueSort(a, b) {
-		return b.initative - a.initative;
+		return a.value - b.value;
 	}
 	
 	var ret = {

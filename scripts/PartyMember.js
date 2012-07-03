@@ -63,7 +63,7 @@ Shattered.Objects.Mob = (function() {
 
 	function setSoulSet() {
 		this.__soulSet = arguments[0];
-		this.Stats = new Shattered.Objects.Stats();
+		this.stats = new Shattered.Objects.Stats();
 	}
 	
 	function getSoulSet() {
@@ -75,14 +75,12 @@ Shattered.Objects.Mob = (function() {
 			
 			Object.defineProperty(this, "name", { value: name, writable: false, enumerable: true });
 			Object.defineProperty(this, "gender", { value: gender, writable: false, enumerable: true });
-			Object.defineProperty(this, "hp", { value: new HP(0), writable: false, enumerable: true });
 			Object.defineProperty(this, "soulSet", { get: getSoulSet, set: setSoulSet, enumerable: true });
 			
 			this.baseStats = new Shattered.Objects.Stats();
-			this.initative = 0;
+			this.ready = 0;
 			this.type = "Mob";
-			
-			setSoulSet(null);
+			this.soulSet = initialSoul;
 			
 			this.equipment = {
 				body: null,
@@ -95,6 +93,25 @@ Shattered.Objects.Mob = (function() {
 			};
 			
 			this.buffs = []; // [ { expires: get # of rounds, undo: fnUndo(mob), tick: fnTick(mob) } ]
+		},
+		
+		ticksTillTurn: function(turn) {
+			return Math.ceil((100 - this.ready + (100 * (turn - 1))) / this.stats.Speed);
+		},
+		
+		tick: function(turns) {
+			turns = turns || 1;
+			this.ready = (this.ready + this.stats.Speed * turns);
+			var ret = this.ready >= 100;
+			this.ready %= 100;
+			return ret ? this.ready : -1;
+		},
+		
+		testTick: function(turns) {
+			var ready = (this.ready + this.stats.Speed * turns) % 100;
+			var last = turns === 1 ? this.ready : (this.ready + this.stats.Speed * (turns - 1)) % 100;
+			var ret = ready < last;
+			return ret ? ready + turns * 100 : -1;
 		}
 	});
 
