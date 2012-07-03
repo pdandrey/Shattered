@@ -300,12 +300,7 @@ Shattered.Pathing = {
 					npc.vel.y = y - npc.collisionBox.top;
 				}
 			} else {
-				//npc.vel.x = 0;
 				npc.vel.y = 0;
-				//npc.direction = 'down';
-				//npc.pathIndex++;
-				//npc.isStanding = true;
-				//return false;
 			}
 			
 			if(npc.vel.x === 0 && npc.vel.y === 0) {
