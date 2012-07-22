@@ -115,8 +115,7 @@ var jsApp	=
 		me.game.onLevelLoaded = this.levelLoaded.bind(this);
 		
 		// set all resources to be loaded
-		Shattered.Game.Resources = new Shattered.Resources();
-		me.loader.preload(Shattered.Game.Resources.preload);
+		me.loader.preload(Shattered.Resources.preload);
 
 		me.debug.renderHitBox = true;
 		me.sys.gravity = 0;

@@ -3,7 +3,7 @@
 Shattered.Objects.Clair = me.ObjectEntity.extend({
  
 	init: function(x, y, settings) {
-		var sprite = Shattered.Game.Resources.sprites["Clair"];
+		var sprite = Shattered.Resources.sprites["Clair"];
 		settings.image = sprite.key;
 		settings.spriteheight = sprite.height;
 		settings.spritewidth = sprite.width;
@@ -17,7 +17,7 @@ Shattered.Objects.Clair = me.ObjectEntity.extend({
 		this.setVelocity(3, 3);
 		this.gravity = 0;
 		
-		this.mob = Shattered.Party.Get("clair");
+		this.mob = Shattered.Party.Get("Clair");
 
 		// set the display to follow our position on both axis
 		me.game.viewport.follow(this.pos, me.game.viewport.AXIS.BOTH);

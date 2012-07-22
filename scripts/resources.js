@@ -4,32 +4,18 @@
 
 Shattered.Resources = (function() {
 
-	return Object.extend({
-		init: function(episode) {
-			if(episode == null)
-				episode = Shattered.Game.Episode;
-			
-			Object.defineProperty(this, "episode", {writable:false, value: episode});
-			Object.defineProperty(this, "preload", {get: getPreloadResources});
-			Object.defineProperty(this, "sprites", {get: getSprites});
-			Object.defineProperty(this, "dialog", {get: getDialog});
-			Object.defineProperty(this, "souls", {get: getSouls});
-			Object.defineProperty(this, "portraits", { get: getPortraits });
-		}
-	});
-
-	var preload = null;
+	var ret = {};
+	Object.defineProperty(ret, "preload", { get: getPreloadResources });
+	Object.defineProperty(ret, "sprites", { get: getSprites });
+	Object.defineProperty(ret, "dialog", { get: getDialog });
+	Object.defineProperty(ret, "portraits", { get: getPortraits });
+	return ret;
+	
 	var sprites = null;
 	var dialog = null;
-	var souls = null;
-	var soulSets = null;
 	var portraits = null;
 	
 	function getPreloadResources() {
-		var episode = this.episode;
-	
-		if(preload != null)
-			return preload;
 		
 		return [
 			image("ground"),
@@ -157,21 +143,7 @@ Shattered.Resources = (function() {
 		}
 		return dialog;
 	}
-	
-	function getSouls() {
-		if(souls != null)
-			return souls;
 		
-		souls = [];
-		
-		souls.push(new Shattered.Objects.Soul("Warrior", new Shattered.Objects.Stats(.25, .2, 0,0,0,0,.05), []));
-		souls.push(new Shattered.Objects.Soul("Engineer", new Shattered.Objects.Stats(0,.25,0,.3,.1,0,.03), []));
-		souls.push(new Shattered.Objects.Soul("Mage", new Shattered.Objects.Stats(0,0,0,.4,.2,.1,0), []));
-		souls.push(new Shattered.Objects.Soul("Thief", new Shattered.Objects.Stats(.05, 0, .3, 0,0,0,.03), []));
-		
-		return souls;
-	}
-	
 	function getPortraits() {
 		if(portraits != null)
 			return portraits;

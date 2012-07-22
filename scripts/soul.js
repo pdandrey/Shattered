@@ -1,19 +1,19 @@
 "use strict";
 
-Shattered.Objects.Power = (function() {
+Shattered.Powers = (function() {
 
 	function execute(source, target) {
-		console.log("Unimplemented Method: Shattered.Objects.Power.execute()");
+		throw "Unimplemented Method: Shattered.Objects.Power.execute()";
 	}
 
-	return Object.extend({
+	var power = Object.extend({
 		init: function(name, level, type, target, effects, range, size, statMods, damageMultiplier, fnExecute, requires) {
 			this.level = level;
 			this.name = name;
 			this.type = type;
 			this.target = target;
 			this.effects = effects;
-			this.range = range; // -1 means weapon based
+			this.range = range; // null means weapon based
 			this.size = size;
 			this.Execute = fnExecute || execute;
 			this.damageMultiplier = damageMultiplier;
@@ -22,67 +22,173 @@ Shattered.Objects.Power = (function() {
 		}
 	});
 	
+	var powers = {
+		Attack: new power(
+			"Attack", 
+			1,
+			Shattered.Enums.Powers.Level.Basic,
+			Shattered.Enums.Powers.Target.Enemy,
+			Shattered.Enums.Powers.Target.Enemy,
+			Shattered.Enums.Powers.Range.Weapon,
+			0,
+			null,
+			1,
+			null,
+			null)
+	};
+	
+	return powers;
 })();
 
-Shattered.Objects.Soul = (function() {
-	var basicAttack = new ShatteredObjects.Power(
-		"Attack", 
-		Shattered.Enums.Powers.Level.Basic,
-		Shattered.Enums.Powers.Target.Enemy,
-		Shattered.Enums.Powers.Target.Enemy,
-		Shattered.Enums.Powers.Range.Weapon,
-		0,
-		null,
-		1,
-		null,
-		null);
-	
-	return Object.extend({
-		init: function(name, statMod, powers) {
-			this.name = name;
-			this.statMod = statMod;
-			this.powers = powers;
-			powers.push(basicAttack);
+Shattered.Souls = (function() {
+		
+	var StatMod = Object.extend({
+		init: function(name, mod) {
+			Object.defineProperty(this, "Stat", { value: name, writable: false, enumerable: true });
+			Object.defineProperty(this, "Modifier", { value: mod, writable: false, enumerable: true });
 		}
 	});
+	
+	var Soul = Object.extend({
+		init: function(soul) {
+			Object.defineProperty(this, "Name", { value: soul.Name, enumerable: true, writable: false });
+			Object.defineProperty(this, "StatModifiers", { get: function() { return statMod.concat(); }, enumerable: true });
+			Object.defineProperty(this, "Powers", {get : function() { return powers.concat(); }, enumerable: true });
+			
+			var statMod = [];
+			for(var mod in soul.Modifiers) {
+				statMod.push(new StatMod(mod, soul.Modifiers[mod]));
+			}
+			
+			var powers = [];
+			powers.push(Shattered.Powers.Attack);
+		}
+	});
+	
+	return {
+		Warrior: new Soul({ Name: 'Warrior', Modifiers: { Strength: 1.25, Vitality: 1.2, HP: 1.05 } }),
+		Engineer: new Soul({ Name: 'Engineer', Modifiers: { Vitality: 1.25, Intelligence: 1.3, Mind: 1.1, HP: 1.03 } }),
+		Mage: new Soul({ Name: 'Mage', Modifiers: { Intelligence: 1.4, Mind: 1.2, Charisma: 1.1 } }),
+		Thief: new Soul({ Name: 'Thief', Modifiers: { Strength: 1.05, Agility: 1.3, HP: 1.03 } })
+	};
 })();
 
-Shattered.Objects.SoulSet = (function() {
-	
-	return Object.extend({
-		init: function(name, fnToString) {
-			this.name = name;
-			this.mainSoul = null;
-			this.subSoulsAllowed = 0;
-			this.subSouls = [];
+Shattered.SoulSets = (function() {
+
+	var PowerLimit = Object.extend({
+		init: function(advanced, basic) {
+			Object.defineProperty(this, "Advanced", { value: advanced, writable: false, enumerable: true });
+			Object.defineProperty(this, "Basic", { value: basic, writable: false, enumerable: true });
+		}
+	});
+
+	var SoulSetDefinition = Object.extend({
+		init: function(set) {
+			Object.defineProperty(this, "Name", { value: set.Name, writable: false, enumerable: true });
+			Object.defineProperty(this, "SubSouls", { value: set.SubSouls, writable: false, enumerable: true });
+			Object.defineProperty(this, "MainPowerLimit", { value: new PowerLimit(set.Main.Advanced, set.Main.Basic), writable: false, enumerable: true});
+			Object.defineProperty(this, "SubPowerLimit", { value: new PowerLimit(set.Sub.Advanced, set.Sub.Basic), writable: false, enumerable: true});
+			Object.defineProperty(this, "StringFormat", { value: set.Format, writable: false, enumerable: true});
+		},
+		create: function() {
+			var ret = new soulset(this);
+			return ret;
+		}
+	});
+
+	var sets = {
+		FocusedPath: new SoulSetDefinition({ Name: 'Focused Path', SubSouls: 0, Main: { Basic: null, Advanced: null }, Sub: { Basic: null, Advanced: null }, Format: '{MAINSOUL}' })
+	}
+
+	var soulset = Object.extend({
+		init: function(set) {
+			Object.defineProperty(this, "SoulSet", { value: set, writable: false, enumerable: true });
+			Object.defineProperty(this, "MainSoul", { 
+				get: function() { return mainSoul; }, 
+				set: function(value) { mainSoul = value; powers.length = 0; }, 
+				enumerable: true 
+			});
+			Object.defineProperty(this, "SubSouls", { 
+				get: function() { return subSouls.concat(); }, 
+				set: function(sub) {
+					if(!sub) {
+						subSouls = [];
+						return;
+					}
+					if(sub.length > this.SoulSet.subSouls)
+						throw "Invalid number of sub souls";
+					subSouls = sub.concat();
+					powers.length = 0;
+				},
+				enumerable: true
+			});
+			Object.defineProperty(this, "Powers", {
+				get: function() { return powers.concat(); },
+				set: function(arrPowers) {
+					var mainAdv = 0, mainBasic = 0;
+					var subAdv = 0, subBasic = 0;
+					var set = this.SoulSet;
+					
+					for(var i=0; i<arrPowers.length; ++i) {
+						if(arrPowers[i] === Shattered.Powers.Attack)
+							continue;
+							
+						var idx = mainSoul.Powers.indexOf(arrPowers[i]);
+						if(idx !== -1) {
+							if(arrPowers[i].level === Shattered.Enums.Powers.Level.Basic) {
+								++mainBasic;
+							} else {
+								++mainAdv;
+							}
+						} else if(subSouls && subSouls.length > 0) {
+							for(var j=0; j<subSouls.length; ++j) {
+								idx = subSouls[j].Powers.indexOf(arrPowers[i]);
+								if(idx !== -1) {
+									if(arrPowers[i].level === Shattered.Enums.Powers.Level.Basic) {
+										++subBasic;
+									} else {
+										++subAdv;
+									}
+									break;
+								}
+							}
+						} else {
+							throw "Power " + arrPowers[i].name + " is not one of the set soul powers.";
+						}
+					}
+					
+					if(set.MainPowerLimit.Advanced && mainAdv > set.MainPowerLimit.Advanced)
+						throw "Too many main advanced powers";
+					if(set.MainPowerLimit.Basic && mainBasic > set.MainPowerLimit.Basic)
+						throw "Too many main basic powers";
+					if(set.SubPowerLimit.Advanced && subAdv > set.SubPowerLimit.Advanced)
+						throw "Too many sub advanced powers";
+					if(set.SubPowerLimit.Basic && subBasic > set.SubPowerLimit.Basic)
+						throw "Too many sub basic powers";
+					
+					powers = arrPowers.concat([Shattered.Powers.Attack]);
+				}
+			});
 			
-			this.mainSoulPowerLimit = {
-				AdvancedPowers: 0,
-				BasicPowers: 0
-			};
+			var mainSoul = null;
+			var subSouls = [];
 			
-			this.subSoulPowerLimit = {
-				AdvancedPowers: 0,
-				BasicPowers: 0
-			};
-			
-			this.toString = fnToString;
+			var powers = [];
+		},
+		toString: function() {
+			return this.SoulSet.StringFormat.replace(/{MAINSOUL}/, mainSoul.Name);
 		},
 		getStatMod: function(baseStats) {
-			var mod = this.mainSoul.statMod;
+			var mod = this.MainSoul.StatModifiers;
+			var ret = Shattered.Objects.Stats.copyFrom(baseStats);
 			
-			return new Shattered.Objects.Stats(
-				baseStats.Strength * (1 + mod.Strength),
-				baseStats.Constitution * (1 + mod.Constitution),
-				baseStats.Dexterity * (1 + mod.Dexterity,
-				baseStats.Intelligence * (1 + mod.Intelligence),
-				baseStats.Wisdom * (1 + mod.Wisdom),
-				baseStats.Charisma * (1 + mod.Charisma),
-				baseStats.HP * (1 + mod.HP)
-			);
+			for(var i=0; i<mod.length; ++i) {
+				ret[mod[i].Name] *= mod[i].Modifier;
+			}
+			
+			return ret;
 		}
 	});
+
+	return sets;
 })();
-
-
-

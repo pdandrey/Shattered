@@ -5,12 +5,12 @@ Shattered.Party = (function() {
 	var activeParty = [];
 	
 	function addPartyMember(member) {
-		var idx = indexOf(member.name);
+		var idx = indexOf(member.Name);
 		
 		if(idx !== -1)
-			throw "Member " + member.name + " already exists in the active party";
+			throw "Member " + member.Name + " already exists in the active party";
 			
-		member.type = "party";
+		member.Type = "party";
 		activeParty.push(member);
 	}
 	
@@ -40,7 +40,7 @@ Shattered.Party = (function() {
 	function indexOf(name) {
 		var idx = 0;
 		for(; idx < activeParty.length; ++idx) {
-			if(activeParty[idx].name === name) {
+			if(activeParty[idx].Name === name) {
 				return idx;
 			}
 		}
@@ -53,6 +53,7 @@ Shattered.Party = (function() {
 		Remove: removePartyMember,
 		Get: getPartyMember,
 		BattleOver: battleOver,
+		Clear: function() { activeParty.length = 0; }
 	}
 	
 	return party;
@@ -61,26 +62,17 @@ Shattered.Party = (function() {
 
 Shattered.Objects.Mob = (function() {
 
-	function setSoulSet() {
-		this.__soulSet = arguments[0];
-		this.stats = new Shattered.Objects.Stats();
-	}
-	
-	function getSoulSet() {
-		return this.__soulSet;
-	}
-
-	return Object.extend({
-		init: function(name, gender, initialSoul) {
+	var ret = Object.extend({
+		init: function(mob) {
+			var soulSet = null;
 			
-			Object.defineProperty(this, "name", { value: name, writable: false, enumerable: true });
-			Object.defineProperty(this, "gender", { value: gender, writable: false, enumerable: true });
-			Object.defineProperty(this, "soulSet", { get: getSoulSet, set: setSoulSet, enumerable: true });
+			Object.defineProperty(this, "Name", { value: mob.Name, writable: false, enumerable: true });
+			Object.defineProperty(this, "Gender", { value: mob.Gender, writable: false, enumerable: true });
+			Object.defineProperty(this, "SoulSet", { get: getSoulSet, set: setSoulSet, enumerable: true });
 			
 			this.baseStats = new Shattered.Objects.Stats();
 			this.ready = 0;
-			this.type = "Mob";
-			this.soulSet = initialSoul;
+			this.Type = "Mob";
 			
 			this.equipment = {
 				body: null,
@@ -93,6 +85,15 @@ Shattered.Objects.Mob = (function() {
 			};
 			
 			this.buffs = []; // [ { expires: get # of rounds, undo: fnUndo(mob), tick: fnTick(mob) } ]
+			
+			function setSoulSet() {
+				soulSet = arguments[0];
+				this.stats = new Shattered.Objects.Stats();
+			}
+			
+			function getSoulSet() {
+				return soulSet;
+			}
 		},
 		
 		ticksTillTurn: function(turn) {
@@ -114,7 +115,38 @@ Shattered.Objects.Mob = (function() {
 			return ret ? ready + turns * 100 : -1;
 		}
 	});
-
+	ret.Load = function(mob) {
+		console.log("Loading %o", mob);
+		var m = new ret(mob);
+		
+		m.Type = mob.Type;
+		
+		var soulset = Shattered.SoulSets[mob.SoulSet.Name.replace(/ /, "")].create();
+		soulset.MainSoul = Shattered.Souls[mob.SoulSet.Main];
+		if(mob.SoulSet.Subs) {
+			var subsouls = [];
+			for(var i=0; i<mob.SoulSet.Subs.length; ++i)
+				subsouls.push(Shattered.Souls[mob.SoulSet.Subs[i]]);
+			soulset.SubSouls = subsouls;
+		}
+		
+		var powers = [Shattered.Powers.Attack];
+		if(mob.Powers) {
+			for(var i=0; i<mob.Powers.length; ++i) {
+				powers.push(Shattered.Powers[mob.Powers[i]]);
+			}
+		}
+		
+		soulset.Powers = powers;
+		m.SoulSet = soulset;
+		
+		for(var stat in mob.Stats) {
+			m.baseStats[stat] = mob.Stats[stat];
+		}
+		
+		return m;
+	}
+	return ret;
 })();
 
 Shattered.Objects.Buff = Object.extend({
@@ -146,17 +178,48 @@ Shattered.Objects.HP = Object.extend({
 	}
 });
 
-Shattered.Objects.Stats = Object.extend({
-	init: function(str, con, dex, intel, wis, cha, hp, speed, range) {
-		this.Strength = str || 0;
-		this.Constitution = con || 0;
-		this.Dexterity = dex || 0;
-		this.Intelligence = intel || 0;
-		this.Wisdom = wis || 0;
-		this.Charisma = cha || 0;
-		this.HP = hp || new Shattered.Objects.HP();
-		this.DeathCounter = 3;
-		this.Speed = speed || 5;
-		this.Range = range || 5;
+Shattered.Objects.Stats = (function() {
+	var stats = {
+		Strength: 		{ Name: 'Strength', Maximum: 25, Minimum: 1 },
+		Agility: 		{ Name: 'Agility', Maximum: 25, Minimum: 1 },
+		Vitality: 		{ Name: 'Vitality', Maximum: 25, Minimum: 1 },
+		Intelligence: 	{ Name: 'Intelligence', Maximum: 25, Minimum: 1 },
+		Mind: 			{ Name: 'Mind', Maximum: 25, Minimum: 1 },
+		Charisma: 		{ Name: 'Charisma', Maximum: 25, Minimum: 1 },
+		HP: 			{ Name: 'HP', Maximum: 999, Minimum: 1 },
+		Speed: 			{ Name: 'Speed', Maximum: 50, Minimum: 10 },
+		Range: 			{ Name: 'Range', Maximum: 10, Minimum: 1 }
 	}
-});
+	
+	function setStat(key, value, values, allowOver) {
+		if(value < stats[key].Minimum)
+			throw key + " " + value + " is below the minimum of " + stats[key].Minimum;
+		if(!allowOver && value > stats[key].Maximum)
+			throw key + " " + value + " is above the maximum of " + stats[key].Maximum;
+		values[key] = value;
+	}
+	
+	var ret = Object.extend({
+		init: function(allowOver) {
+			var values = {};
+			
+			for(var s in stats) {
+				Object.defineProperty(this, s, { 
+					get: (function() { var key = s; return function() { return values[key]; }; })(), 
+					set: (function() { var key = s; return function(value) { setStat(key, value, values, allowOver); }; })(), 
+					enumerable: true 
+				});
+				values[s] = stats[s].Minimum;
+			}
+		}
+	});
+	ret.CopyFrom = function(stat, allowOver) {
+		var newStat = new ret(allowOver);
+		for(var s in stat) {
+			newStat[s] = stat[s];
+		}
+		return newStat;
+	}
+	return ret;
+})();
+

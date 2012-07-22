@@ -6,9 +6,10 @@ Shattered.Objects.NPC = me.ObjectEntity.extend({
 		console.log("creating %s: %o", settings.name, settings);
 		switch(settings.name.toLowerCase()) {
 			case 'doug':
-				settings.sprite = Shattered.Game.Resources.sprites["Doug"];
+				settings.sprite = Shattered.Resources.sprites["Doug"];
 				settings.portraitkey = settings.portraitkey || "doug";
 				this.moveState = 0;
+				this.mob = Shattered.Party.Get('Doug');
 				break;
 			
 			case 'sheep':
@@ -26,7 +27,7 @@ Shattered.Objects.NPC = me.ObjectEntity.extend({
 		settings.pathkey = settings.pathkey || settings.name.toLowerCase();
 		settings.type = settings.type || "npc";
 		
-		settings.sprite = settings.sprite || Shattered.Game.Resources.sprites[settings.spritekey];
+		settings.sprite = settings.sprite || Shattered.Resources.sprites[settings.spritekey];
 		
 		if(settings.gender) {
 			if(isNaN(parseInt(settings.gender))) {
@@ -47,7 +48,7 @@ Shattered.Objects.NPC = me.ObjectEntity.extend({
 		if(/-random$/.test(settings.spritekey) && Array.isArray(settings.sprite)) {
 			var index = Number.random(0, settings.sprite.length-1);
 			var key = settings.sprite[index];
-			settings.sprite = Shattered.Game.Resources.sprites[key];
+			settings.sprite = Shattered.Resources.sprites[key];
 			if(!settings.sprite)
 				throw "Bad random image index " + index;
 		}
@@ -90,11 +91,11 @@ Shattered.Objects.NPC = me.ObjectEntity.extend({
 		if(settings.dialog)
 			this.dialog = new Shattered.Objects.BasicDialog(Shattered.Enums.DialogOptions.MODE.SEQUENTIAL, settings.dialog);
 		else if(settings.dialogkey) {
-			if(Shattered.Game.Resources.dialog.Episodes[Shattered.Story.Episode]
-				&& Shattered.Game.Resources.dialog.Episodes[Shattered.Story.Episode]["Scene" + Shattered.Story.Scene])
-				this.dialog = Shattered.Game.Resources.dialog.Episodes[Shattered.Story.Episode]["Scene" + Shattered.Story.Scene][settings.dialogkey];
+			if(Shattered.Resources.dialog.Episodes[Shattered.Story.Episode]
+				&& Shattered.Resources.dialog.Episodes[Shattered.Story.Episode]["Scene" + Shattered.Story.Scene])
+				this.dialog = Shattered.Resources.dialog.Episodes[Shattered.Story.Episode]["Scene" + Shattered.Story.Scene][settings.dialogkey];
 			if(!this.dialog)
-				this.dialog = Shattered.Game.Resources.dialog.Global[settings.dialogkey];
+				this.dialog = Shattered.Resources.dialog.Global[settings.dialogkey];
 		}
 		
 		this.settings = settings;
