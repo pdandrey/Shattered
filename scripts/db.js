@@ -22,7 +22,6 @@ Shattered.DB = (function() {
 				console.error("failed to update version", event);
 			}
 			setV.onsuccess = function(event) {
-				db.deleteObjectStore("Party");
 				var storeParty = db.createObjectStore("Party", { keyPath: 'Name' });
 				storeParty.createIndex("IsInParty", "IsInParty", { unique: false });
 				
@@ -41,17 +40,22 @@ Shattered.DB = (function() {
 				
 				Shattered.Party.Add(clair);
 				Shattered.Party.Add(doug);
+				
+				loadActiveParty();
 			}
 		} else {
 			console.log("database v %s opened", db.version);
+			loadActiveParty();
 		}
-		
-		loadActiveParty();
 	}
 
 	function loadActiveParty() {
 		Shattered.Party.Clear();
-		db.transaction("Party").objectStore("Party").index("IsInParty").openCursor().onsuccess = function(event) {
+		var trans = db.transaction("Party");
+		var store = trans.objectStore("Party")
+		var index = store.index("IsInParty")
+		var cur = index.openCursor()
+		cur.onsuccess = function(event) {
 			var cursor = event.target.result;
 			if(cursor) {
 				var pm = Shattered.Objects.Mob.Load(cursor.value);
