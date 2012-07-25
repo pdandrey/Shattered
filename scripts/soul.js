@@ -69,7 +69,11 @@ Shattered.Souls = (function() {
 		Warrior: new Soul({ Name: 'Warrior', Modifiers: { Strength: 1.25, Vitality: 1.2, HP: 1.05 } }),
 		Engineer: new Soul({ Name: 'Engineer', Modifiers: { Vitality: 1.25, Intelligence: 1.3, Mind: 1.1, HP: 1.03 } }),
 		Mage: new Soul({ Name: 'Mage', Modifiers: { Intelligence: 1.4, Mind: 1.2, Charisma: 1.1 } }),
-		Thief: new Soul({ Name: 'Thief', Modifiers: { Strength: 1.05, Agility: 1.3, HP: 1.03 } })
+		Thief: new Soul({ Name: 'Thief', Modifiers: { Strength: 1.05, Agility: 1.3, HP: 1.03 } }),
+		
+		Monsters: {
+			Snake: new Soul({ Name: "Snake", Modifiers: null })
+		}
 	};
 })();
 
@@ -90,8 +94,13 @@ Shattered.SoulSets = (function() {
 			Object.defineProperty(this, "SubPowerLimit", { value: new PowerLimit(set.Sub.Advanced, set.Sub.Basic), writable: false, enumerable: true});
 			Object.defineProperty(this, "StringFormat", { value: set.Format, writable: false, enumerable: true});
 		},
-		create: function() {
+		create: function(main, subs, powers) {
 			var ret = new soulset(this);
+			if(main) {
+				ret.MainSoul = main;
+				ret.SubSouls = subs;
+				ret.Powers = powers || [];
+			}
 			return ret;
 		}
 	});

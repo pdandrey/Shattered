@@ -37,6 +37,14 @@ Shattered.Story = (function() {
 					me.game.add(new Shattered.Objects.NPC(pos.x, pos.y, { name: 'sheep', pathkey: 'none', velocity: 2 }), z);
 				}
 				
+				var snakes = [ [16,5], [4,13]];
+				for(var i=0; i<snakes.length; ++i) {
+					pos = me.Vector2d.toXY(snakes[i][0], snakes[i][1]);
+					var s = new Shattered.Objects.NPC(pos.x, pos.y, { name: 'Snake', pathkey:'none', velocity: 2, spritekey: 'snake' });
+					console.log(s.mob);
+					me.game.add(s, z);
+				}
+				
 				me.game.sort();
 				
 			} else if(levelID === 'prologue-augustun') {

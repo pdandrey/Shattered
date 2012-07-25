@@ -41,8 +41,8 @@ Shattered.Objects.NPC = me.ObjectEntity.extend({
 			settings.gender = Shattered.Enums.Gender.Male;
 		}
 		
-		if(settings.createmob === true) {
-			this.mob = new Shattered.Objects.Mob(settings.name, settings.gender, settings.soul);
+		if(Shattered.Monsters[settings.name]) {
+			this.mob = Shattered.Monsters[settings.name];
 		}
 		
 		if(/-random$/.test(settings.spritekey) && Array.isArray(settings.sprite)) {

@@ -43,6 +43,7 @@ Shattered.Resources = (function() {
 			sprite("npc_f2", "student_b.png"),
 			sprite("npc_m", "student_c.png"),
 			sprite("npc_standing", "characters_accessorized.png"),
+			sprite("snake", "snake.png"),
 			sprite("24x32_Character_Template_C1_CharlesGabriel-1", "24x32_Character_Template_C1_CharlesGabriel-1.png"),
 			portrait("48x48_Faces_1st_Sheet_Update_CharlesGabriel_OGA_0"),
 			portrait("48x48_Faces_2nd_Sheet_Update_CharlesGabriel_OGA_0"),
@@ -90,7 +91,7 @@ Shattered.Resources = (function() {
 		buildSprite('npc-female', 'npc_f2', 64, 64, 0, 27,18,9,9, collision(16, 32, 32, 32));
 		buildSprite('npc-child-male', '24x32_Character_Template_C1_CharlesGabriel-1', 48, 64, 6, 18, 30, 42, 3, collision(12,32,24,32));
 		buildSprite('npc-child-female', '24x32_Character_Template_C1_CharlesGabriel-1', 48, 64, 9, 21, 33, 45, 3, collision(12,32,24,32));
-		
+		buildSprite("snake", 'snake', 32, 32, 0, 9, 6, 3, 3);
 		sprites["sheep-random"] = [
 			"sheep-gold", "sheep-black-red", "sheep-black-gold",
 			'sheep-ghost', 'sheep-white-gold', 'sheep-tan',

@@ -70,7 +70,11 @@ Shattered.Objects.Mob = (function() {
 			Object.defineProperty(this, "Gender", { value: mob.Gender, writable: false, enumerable: true });
 			Object.defineProperty(this, "SoulSet", { get: getSoulSet, set: setSoulSet, enumerable: true });
 			
-			this.baseStats = new Shattered.Objects.Stats();
+			if(mob.Stats)
+				this.baseStats = Shattered.Objects.Stats.CopyFrom(mob.Stats);
+			else
+				this.baseStats = new Shattered.Objects.Stats();
+				
 			this.ready = 0;
 			this.Type = "Mob";
 			
@@ -94,6 +98,9 @@ Shattered.Objects.Mob = (function() {
 			function getSoulSet() {
 				return soulSet;
 			}
+			
+			if(mob.SoulSet)
+				this.SoulSet = mob.SoulSet;
 		},
 		
 		ticksTillTurn: function(turn) {
@@ -211,6 +218,13 @@ Shattered.Objects.Stats = (function() {
 				});
 				values[s] = stats[s].Minimum;
 			}
+		},
+		toString: function() {
+			var ret = "";
+			for(var s in stats) {
+				ret += s + ": " + this[s] + "\n";
+			}
+			return ret;
 		}
 	});
 	ret.CopyFrom = function(stat, allowOver) {
