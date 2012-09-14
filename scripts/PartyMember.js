@@ -92,7 +92,12 @@ Shattered.Objects.Mob = (function() {
 			
 			function setSoulSet() {
 				soulSet = arguments[0];
-				this.stats = new Shattered.Objects.Stats();
+				this.stats = Shattered.Objects.Stats.CopyFrom(this.baseStats);
+				if(soulSet && soulSet.MainSoul) {
+					for(var s in soulSet.MainSoul.StatModifiers) {
+						this.stats[s] *= soulSet.MainSoul.StatModifiers[s];
+					}
+				}
 			}
 			
 			function getSoulSet() {
@@ -120,6 +125,9 @@ Shattered.Objects.Mob = (function() {
 			var last = turns === 1 ? this.ready : (this.ready + this.stats.Speed * (turns - 1)) % 100;
 			var ret = ready < last;
 			return ret ? ready + turns * 100 : -1;
+		},
+		clone: function() {
+			return new ret({Name: this.Name, Gender: this.Gender, SoulSet: this.SoulSet, Stats: this.baseStats});
 		}
 	});
 	ret.Load = function(mob) {
@@ -237,3 +245,25 @@ Shattered.Objects.Stats = (function() {
 	return ret;
 })();
 
+Shattered.Objects.BattleMoveHUD = me.SpriteObject.extend({
+	init: function() {
+		this.parent(0,0,new Image(),0,0);
+		this.center = null;
+		this.distance = null;
+		this.name = "battlemove";
+	},
+	draw: function(context, x, y) {
+		if(this.center) {
+			context.beginPath();
+			var xpos = ~~(this.center.x - this.vp.pos.x), ypos = ~~(this.center.y - this.vp.pos.y);
+			context.arc(xpos, ypos, this.distance * 32, 0, 2*Math.PI, false);
+			context.fillStyle = "rgba(142, 214, 255, 0.5)";
+			context.fill();
+			var oldWidth = context.lineWidth;
+			context.lineWidth = 3;
+			context.strokeStyle = "black";
+			context.stroke();
+			context.lineWidth = oldWidth;
+		}
+	}
+});

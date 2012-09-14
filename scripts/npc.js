@@ -42,7 +42,11 @@ Shattered.Objects.NPC = me.ObjectEntity.extend({
 		}
 		
 		if(Shattered.Monsters[settings.name]) {
-			this.mob = Shattered.Monsters[settings.name];
+			this.mob = Shattered.Monsters[settings.name].clone();
+		}
+		
+		if(this.mob) {
+			this.mob.entity = this;
 		}
 		
 		if(/-random$/.test(settings.spritekey) && Array.isArray(settings.sprite)) {
@@ -121,24 +125,35 @@ Shattered.Objects.NPC = me.ObjectEntity.extend({
 		if(!this.mob)
 			return false;
 		
-		if(Shattered.Battle.Current !== this.mob) 
-			return false;
+		if(Shattered.Battle.Current !== this.mob)
+			return true;
 			
 		// Handle battle turn
 		
-		if(this.mob.type === "party") {
-			// listen for input
-		} else {
-			
+		if(me.input.isKeyPressed('action')) {
+			Shattered.Battle.Next();
+			return true;
 		}
 		
-		return false;
+		if(this.mob.type === "party") {
+			Shattered.Player.Move(this);
+		} else {
+			Shattered.Player.Move(this);
+		}
+		
+		return true;
 	},
 	
 	update: function() {
 		
-		if((Shattered.Game.Control & Shattered.Enums.Control.Battle) === Shattered.Enums.Control.Battle)
-			return this.battleUpdate();
+		if((Shattered.Game.Control & Shattered.Enums.Control.Battle) === Shattered.Enums.Control.Battle) {
+			if(this.battleUpdate()) {
+				this.parent(this);
+				return true;
+			} else {
+				return false;
+			}
+		}
 		
 		if((Shattered.Game.Control & Shattered.Enums.Control.Npc) !== Shattered.Enums.Control.Npc)
 			return false;

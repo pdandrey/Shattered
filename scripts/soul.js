@@ -72,7 +72,7 @@ Shattered.Souls = (function() {
 		Thief: new Soul({ Name: 'Thief', Modifiers: { Strength: 1.05, Agility: 1.3, HP: 1.03 } }),
 		
 		Monsters: {
-			Snake: new Soul({ Name: "Snake", Modifiers: null })
+			Snake: new Soul({ Name: "Snake", Modifiers: {} })
 		}
 	};
 })();
