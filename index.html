@@ -1,53 +1,41 @@
 <!DOCTYPE html>
+
 <html>
-	<head>
-		<title>Shattered &mdash; Latent Pixel Cup Entry by Dave Andrey</title>
-	</head>
-	<style>
-		body { background: black; color: white; }
-	</style>
-	<script>
-		function getPosition() {
-			var player = me.game.getEntityByName("clair")[0];
-			var pos = player.pos;
-			var tile = { x: pos.x / Shattered.Settings.tileSize, y: pos.y / Shattered.Settings.tileSize };
-			console.log("%d, %d", tile.x, tile.y);
-			document.getElementById("spnPosition").innerText = tile.x + ", " + tile.y;
-		}
-	</script>
-	<body>
-		<div id="info">
-			<div id="fps">
-				<span id="framecounter">(0/0 fps)</span>
-				<input type="checkbox" checked onclick="me.debug.renderHitBox = this.checked; me.game.repaint();"/>
-				Render HitBox
-			</div>
-			<div>
-				Arrow keys move.  A is the action button.
-			</div>
-		</div>
-		<div style="float:right">
-			<button onclick="getPosition(); return false;">Get Position</button>
-			<br/>
-			<span id="spnPosition"></span>
-		</div>
-		<div id="jsapp">
-			<script type="text/javascript" src="scripts/melonJS-0.9.4.js"></script>
-			<script type="text/javascript" src="scripts/settings.js"></script>
-			<script type="text/javascript" src="scripts/resources.js"></script>
-			<script type="text/javascript" src="scripts/dialog.js"></script>
-			<script type="text/javascript" src="scripts/player.js"></script>
-			<script type="text/javascript" src="scripts/npc.js"></script>
-			<script type="text/javascript" src="scripts/story.js"></script>
-			<script type="text/javascript" src="scripts/PartyMember.js"></script>
-			<script type="text/javascript" src="scripts/astar.js"></script>
-			<script type="text/javascript" src="scripts/battle.js"></script>
-			<script type="text/javascript" src="scripts/soul.js"></script>
-			<script type="text/javascript" src="scripts/db.js"></script>
-			<script type="text/javascript" src="scripts/Monsters.js"></script>
-			<script type="text/javascript" src="scripts/main.js"></script>
-		</div>
-		<br/>
-		<a href="http://lpc.opengameart.org/">Latent Pixel Cup</a>
-	</body>
+    <head>
+        <title>Shattered</title>
+    </head>
+    <body>
+        <div id="screen">
+            <span id="framecounter">(0/0 fps)</span>
+            <span id="time">time</span>
+            <script type="text/javascript" src="lib/melonJS-0.9.5.js"></script>
+            <script type="text/javascript" src="lib/cp.js"></script>
+            <script type="text/javascript" src="lib/cm.js"></script>
+
+            <script type="text/javascript" src="scripts/Shattered.js"></script>
+            <script type="text/javascript" src="scripts/Settings.js"></script>
+            <script type="text/javascript" src="scripts/Enums.js"></script>
+            <script type="text/javascript" src="scripts/Resources.js"></script>
+            <script type="text/javascript" src="scripts/Utility.js"></script>
+            <script type="text/javascript" src="scripts/Control.js"></script>
+
+            <script type="text/javascript" src="scripts/objects/sprite.js"></script>
+
+            <script type="text/javascript" src="scripts/objects/SpriteSheet.js"></script>
+            <script type="text/javascript" src="scripts/objects/entities/Mob.js"></script>
+
+            <!--<script type="text/javascript" src="scripts/objects/entities/TBD_Player.js"></script>-->
+            <script type="text/javascript" src="scripts/objects/screens/PlayScreen.js"></script>
+            <script type="text/javascript" src="scripts/objects/weapon.js"></script>
+            <script type="text/javascript" src="scripts/objects/entities/Chest.js"></script>
+            <script type="text/javascript" src="scripts/objects/dialog.js"></script>
+
+            <script type="text/javascript">
+                /* Bootstrap */
+                window.onReady(function() {
+                    Shattered.init();
+                });
+            </script>
+        </div>
+    </body>
 </html>

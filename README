@@ -1,9 +1,65 @@
-Shattered
-A HTML5 game entry for the Liberated Pixel Cup
-http://lpc.opengameart.org/
+Shattered, A Fantasy RPG
 
-MelonJS Game Engine: http://www.melonjs.org
+Copyright 2012, Dave Andrey
 
-Art from http://www.opengameart.com and another site that I have bookmarked on a different computer.  Will add when I get a chance.
+Shattered started out as an HTML5 game entry for the Liberated Pixel Cup (http://lpc.opengameart.org/). However,
+due to outside issues I didn't get it near enough to complete to submit. Since then I have picked it back up
+and I feel that it is coming together much nicer now. I stumbled upon Neverwell Moor by Jason Oster
+(http://blog.kodewerx.org/). The stuff he did with Chipmunk is amazing and pretty much blew away my attempts at
+creating additional collision tile types. I have integrated his Chipmunk code into Shattered and pretty much
+started over. I am hoping that the end result is cleaner. I know the movement feels a less frustrating with
+chipmunk.
 
-Most (if not all art) will be updated once phase 1 of LPC is complete.
+License
+-------
+This code is released to the public under a dual license. The full license texts are available as follows:
+
+* [GPL V3](gpl-3.0.txt)
+* [EXPAT (aka MIT)](COPYING.txt)
+
+Libraries
+---------
+MelonJS Game Engine
+http://www.melonjs.org
+MIT License
+Olivier Biot
+
+Chipmunk-js
+https://github.com/josephg/Chipmunk-js
+MIT License
+Scott Lembcke, Joseph Gentle
+
+ChipMelon (and other bits and pieces)
+http://blog.kodewerx.org/
+MIT License
+Jason Oster
+
+Art Assets
+----------
+The majority of the art used in Shattered was created for the Liberated Pixel Cup (http://lpc.opengameart.org/)
+
+Thane & Stacy Brimhall (AKA Pennomi & Laetissima)
+http://opengameart.org/content/lpc-pennomis-ui-elements
+http://opengameart.org/content/lpc-2-characters
+CC-BY-SA 3.0, GNU GPL 3.0 or later
+dialog.png
+female_greendress.png
+
+Daniel Eddeland
+http://opengameart.org/content/lpc-farming-tilesets-magic-animations-and-ui-elements
+CC-BY-SA 3.0, GNU GPL 3.0 or later
+sandwater.png
+sword_sheet.png
+
+Lanea Zimmerman (AKA Sharm)
+http://lpc.opengameart.org/static/lpc-style-guide/authors.html
+CC-BY-SA 3.0, GNU GPL 3.0 or later
+chests.png
+princess.png
+grass.png
+treetop.png
+trunk.png
+
+Stephen Beller
+animwater.png
+

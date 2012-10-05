@@ -18,6 +18,9 @@ local.properties
 .settings/
 .loadpath
 
+# WebStorm files
+.idea/
+
 # External tool builders
 .externalToolBuilders/
 
@@ -164,5 +167,4 @@ pip-log.txt
 # Mac crap
 .DS_Store
 
-images/testbed
-images/work
+tags/
