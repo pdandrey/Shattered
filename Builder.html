@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Canvas Builder</title>
+    <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/ui-lightness/jquery-ui.css" rel="stylesheet" type="text/css"/>
+    <link href="lib/jquery.colorpicker.css" rel="stylesheet" type="text/css"/>
+
+    <style>
+        body {
+            font-family:	'Segoe UI', Verdana, Arial, Helvetica, sans-serif;
+            font-size:		62.5%;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        Hair Style:
+        <select onchange="hairChanged(this);">
+            <option value="bangs_long">Long Bangs</option>
+            <option value="bangs_short">Short Bangs</option>
+            <option value="loose" selected>Loose</option>
+            <option value="pixie">Pixie</option>
+            <option value="ponytail">Ponytail</option>
+            <option value="princess">Princess</option>
+            <option value="swoop">Swoop</option>
+            <option value="unkempt">Unkempt</option>
+        </select>
+    </div>
+    <div>
+        Hair Color: <input id="clrHair" type="text" value="" style="display:none;"/>
+    </div>
+
+    <canvas id="canvas" width="832" height="1344"/>
+
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js"></script>
+    <script src="lib/jquery.colorpicker.js"></script>
+
+    <script>
+        var canvas = document.getElementById('canvas');
+        var context = canvas.getContext('2d');
+
+        var base, hair, body, feet;
+        var hairColor = [255, 168, 1];
+
+        $(function () {
+            $("#clrHair").val("rgb(" + hairColor.join(",") + ")").colorpicker({
+                buttonColorize: true,
+                buttonImageOnly: true,
+                buttonImage: 'lib/images/ui-colorpicker.png',
+                showOn: 'button',
+                colorFormat: 'RGB',
+                close: colorClosed,
+                swatches: {
+                    Green: { r: 61/255, g: 189/255, b: 97/255 },
+                    Red: { r: 213/255, g: 11/255, b: 16/255},
+                    Purple: {r:101/255,g:21/255,b:147/255},
+                    Blue: {r:28/255,g:87/255,b:196/255},
+                    Black: {r:48/255, g:16/255, b:18/255},
+                    Brown: {r:128/255,g:0/255,b:9/255},
+                    Blond: {r:255/255, g:168/255, b:1/255}
+                },
+                parts: ['map','hex','rgb','preview','swatches','footer']
+            });
+
+            base = loadImage("resources/sprites/build/female/base_light.png");
+            hair = loadImage("resources/sprites/build/female/hair_loose.png");
+            body = loadImage("resources/sprites/build/female/torso_walsh.png");
+            feet = loadImage("resources/sprites/build/female/feet_ghillies.png");
+
+            drawCharacter();
+        });
+
+        function hairChanged(ddl) {
+            hair = loadImage("resources/sprites/build/female/hair_" + ddl.value + ".png", drawCharacter);
+        }
+
+        function colorClosed(event, args) {
+            var old = hairColor.join(",");
+            if(old === args.formatted)
+                return;
+
+            hairColor = [
+                ~~(args.rgb.r * 255),
+                ~~(args.rgb.g * 255),
+                ~~(args.rgb.b * 255)
+            ];
+
+            drawCharacter();
+        }
+
+        function drawCharacter() {
+            var i;
+            var layers = [base, hair, feet, body];
+            for(i=0; i<layers.length; ++i) {
+                if(!layers[i]["data-loaded"]) {
+                    console.log("delaying init2");
+                    setTimeout(drawCharacter, 500);
+                    return;
+                }
+            }
+
+            var h2 = multiplyFilter(hair, hairColor);
+            drawImage([base, feet, body, h2]);
+        }
+
+        function loadImage(source, callback) {
+            var image = new Image();
+            this["data-loaded"] = false;
+            image.onload = function() {
+                this["data-loaded"] = true;
+                if(callback)
+                    callback(image);
+            }
+            image.src = source;
+            return image;
+        }
+
+        function drawImage(images) {
+            var i;
+            for(i=0; i<images.length; ++i) {
+                if(!images[i]["data-loaded"]) {
+                    setTimeout(function() { drawImage(images); }, 500);
+                    return;
+                }
+            }
+
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            for(i=0; i<images.length; ++i) {
+                context.drawImage(images[i], 0, 0);
+            }
+        }
+
+        function multiplyFilter(image, color) {
+            if(!image["data-loaded"])
+            {
+                throw("image not loaded");
+            }
+            var buffer = document.createElement('canvas');
+            buffer.width = canvas.width;
+            buffer.height = canvas.height;
+
+            //buffer = canvas;
+
+            var ctx = buffer.getContext("2d");
+            ctx.drawImage(image, 0, 0);
+
+            var imgData = ctx.getImageData(0, 0, buffer.width, buffer.height);
+            var pix = imgData.data;
+            // Loop over each pixel and change the color.
+            for (var i = 0, n = pix.length; i < n; i += 4) {
+                pix[i  ] = multiply(pix[i  ], color[0]); // red
+                pix[i+1] = multiply(pix[i+1], color[1]); // green
+                pix[i+2] = multiply(pix[i+2], color[2]); // blue
+                // pix[i+3] is alpha channel (ignored)
+            }
+            // Draw the result on the canvas
+            ctx.putImageData(imgData, 0, 0);
+
+            function multiply(topValue, bottomValue){
+                return topValue * bottomValue / 255;
+            }
+
+            var ret = new Image();
+            ret.onload = function() { this["data-loaded"] = true;}
+            ret.src = buffer.toDataURL();
+            return ret;
+        }
+    </script>
+</body>
+</html>
