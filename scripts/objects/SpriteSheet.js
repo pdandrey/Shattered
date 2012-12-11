@@ -33,6 +33,40 @@
         this.animations = {};
     };
 
+    var standardSheet = null;
+
+    Shattered.Objects.SpriteSheet.getStandardSheet = function() {
+
+        if(!standardSheet) {
+            var dir = Shattered.Enums.Directions;
+
+            standardSheet = new Shattered.Objects.SpriteSheet(64, 64)
+                .addWalkAnimation(dir.North, 104, 9)
+                .addWalkAnimation(dir.West, 117, 9)
+                .addWalkAnimation(dir.South, 130, 9)
+                .addWalkAnimation(dir.East, 143, 9)
+                .addCastAnimation(dir.North, 0, 7)
+                .addCastAnimation(dir.West, 13, 7)
+                .addCastAnimation(dir.South, 26, 7)
+                .addCastAnimation(dir.East, 39, 7)
+                .addStabAnimation(dir.North, 52, 8)
+                .addStabAnimation(dir.West, 65, 8)
+                .addStabAnimation(dir.South, 78, 8)
+                .addStabAnimation(dir.East, 91, 8)
+                .addSlashAnimation(dir.North, 156, 6)
+                .addSlashAnimation(dir.West, 169, 6)
+                .addSlashAnimation(dir.South, 182, 6)
+                .addSlashAnimation(dir.East, 195, 6)
+                .addBowAnimation(dir.North, 208, 13)
+                .addBowAnimation(dir.West, 221, 13)
+                .addBowAnimation(dir.South, 234, 13)
+                .addBowAnimation(dir.East, 247, 13)
+                .addDeathAnimation(260, 6);
+        }
+
+        return standardSheet;
+    };
+
     /**
      * Sets the indexes for a direction
      * @param {Shattered.Enums.Directions|int} direction The direction of the animation
@@ -47,6 +81,48 @@
      */
     Shattered.Objects.SpriteSheet.prototype.addWalkAnimation = function(direction, index, count) {
         setAnimation.call(this, "walk_" + direction, index, count);
+        if(Array.isArray(index))
+            setAnimation.call(this, "stand_" + direction, index[0], 1);
+        else
+            setAnimation.call(this, "stand_" + direction, index, 1);
+        return this;
+    };
+
+    /**
+     * Sets the indexes for a direction
+     * @param {Shattered.Enums.Directions|int} direction The direction of the animation
+     * @param {Array.<int>|int} index Array of indeces for that direction
+     *        or the first index of the animation.
+     * @param {int} [count] If index is the start index, count is the number of frames
+     *        in the animation
+     * @throws {string} Unknown direction
+     * @throws {string} If the index array contains a non-numeric value or a value < 0
+     * @throws {string} If index or count are missing, non-numeric, or < 0
+     * @returns {Shattered.Objects.SpriteSheet}
+     */
+    Shattered.Objects.SpriteSheet.prototype.addStabAnimation = function(direction, index, count) {
+        setAnimation.call(this, "stab_" + direction, index, count);
+        if(Array.isArray(index))
+            setAnimation.call(this, "stand_" + direction, index[0], 1);
+        else
+            setAnimation.call(this, "stand_" + direction, index, 1);
+        return this;
+    };
+
+    /**
+     * Sets the indexes for a direction
+     * @param {Shattered.Enums.Directions|int} direction The direction of the animation
+     * @param {Array.<int>|int} index Array of indeces for that direction
+     *        or the first index of the animation.
+     * @param {int} [count] If index is the start index, count is the number of frames
+     *        in the animation
+     * @throws {string} Unknown direction
+     * @throws {string} If the index array contains a non-numeric value or a value < 0
+     * @throws {string} If index or count are missing, non-numeric, or < 0
+     * @returns {Shattered.Objects.SpriteSheet}
+     */
+    Shattered.Objects.SpriteSheet.prototype.addBowAnimation = function(direction, index, count) {
+        setAnimation.call(this, "bow_" + direction, index, count);
         if(Array.isArray(index))
             setAnimation.call(this, "stand_" + direction, index[0], 1);
         else

@@ -52,7 +52,7 @@
    <properties>
     <property name="charactername" value="player"/>
     <property name="compose" value="[{&quot;name&quot;:&quot;sword&quot;, &quot;class&quot;: &quot;Shattered.Objects.Weapon&quot;, &quot;image&quot;: &quot;sword&quot;, &quot;offset&quot;: { &quot;x&quot;:-35, &quot;y&quot;:-27 }, &quot;visible&quot;: false}]"/>
-    <property name="image" value="female_greendress"/>
+    <property name="image" value="player"/>
     <property name="player" value="true"/>
    </properties>
   </object>

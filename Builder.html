@@ -29,6 +29,14 @@
     <div>
         Hair Color: <input id="clrHair" type="text" value="" style="display:none;"/>
     </div>
+    <div>
+        Class:
+        <select onchange="classChanged(this);">
+            <option value="fighter">Scrapper</option>
+            <option value="engineer">Engineer</option>
+            <option value="rogue">Sneak</option>
+        </select>
+    </div>
 
     <canvas id="canvas" width="832" height="1344"/>
 
@@ -39,11 +47,42 @@
     <script src="lib/jquery.colorpicker.js"></script>
 
     <script>
+
+        var classes = {
+            fighter: {
+                name: "Scrapper",
+                body: "leather",
+                legs: "leather",
+                feet: "leather"
+            },
+            engineer: {
+                name: "Engineer",
+                body: "shirt",
+                legs: "leather",
+                feet: "leather"
+            },
+            rogue: {
+                name: "Sneak",
+                body: "tanktop",
+                legs: "red",
+                feet: "leather"
+            }
+        };
+
         var canvas = document.getElementById('canvas');
         var context = canvas.getContext('2d');
 
-        var base, hair, body, feet;
+        var base, hair, body, feet, legs;
         var hairColor = [255, 168, 1];
+
+        function classChanged(ddl) {
+            var c = classes[ddl.value];
+            body = loadImage("resources/sprites/build/female/body_" + c.body + ".png");
+            legs = loadImage("resources/sprites/build/female/legs_" + c.legs + ".png");
+            feet = loadImage("resources/sprites/build/female/feet_" + c.feet + ".png");
+
+            drawCharacter();
+        }
 
         $(function () {
             $("#clrHair").val("rgb(" + hairColor.join(",") + ")").colorpicker({
@@ -67,8 +106,9 @@
 
             base = loadImage("resources/sprites/build/female/base_light.png");
             hair = loadImage("resources/sprites/build/female/hair_loose.png");
-            body = loadImage("resources/sprites/build/female/torso_walsh.png");
-            feet = loadImage("resources/sprites/build/female/feet_ghillies.png");
+            body = loadImage("resources/sprites/build/female/body_leather.png");
+            feet = loadImage("resources/sprites/build/female/feet_leather.png");
+            legs = loadImage("resources/sprites/build/female/legs_leather.png");
 
             drawCharacter();
         });
@@ -93,9 +133,9 @@
 
         function drawCharacter() {
             var i;
-            var layers = [base, hair, feet, body];
+            var layers = [base, hair, feet, body, legs];
             for(i=0; i<layers.length; ++i) {
-                if(!layers[i]["data-loaded"]) {
+                if(layers[i] != null && !layers[i]["data-loaded"]) {
                     console.log("delaying init2");
                     setTimeout(drawCharacter, 500);
                     return;
@@ -103,7 +143,7 @@
             }
 
             var h2 = multiplyFilter(hair, hairColor);
-            drawImage([base, feet, body, h2]);
+            drawImage([base, feet, legs, body, h2]);
         }
 
         function loadImage(source, callback) {
@@ -113,7 +153,7 @@
                 this["data-loaded"] = true;
                 if(callback)
                     callback(image);
-            }
+            };
             image.src = source;
             return image;
         }
@@ -164,7 +204,7 @@
             }
 
             var ret = new Image();
-            ret.onload = function() { this["data-loaded"] = true;}
+            ret.onload = function() { this["data-loaded"] = true;};
             ret.src = buffer.toDataURL();
             return ret;
         }
