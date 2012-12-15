@@ -34,7 +34,7 @@ var Shattered = {
 
         me.loader.onload = loaded.bind(this);
 
-        me.video.init("screen", 640, 480, false, 2.0);
+        me.video.init( "screen", 640, 480, false, 1.0);
         Shattered.Resources.load();
 
         function loaded() {
@@ -68,6 +68,12 @@ var Shattered = {
             me.input.bindKey(me.input.KEY.DOWN, Shattered.Enums.Input.South);
             me.input.bindKey(me.input.KEY.A, Shattered.Enums.Input.Action, true);
             me.input.bindKey(me.input.KEY.SHIFT, Shattered.Enums.Input.Run);
+
+            me.input.registerMouseEvent('mouseup', null, mouseClick, false);
+        }
+
+        function mouseClick(e) {
+            Shattered.Status.PlayerMob.destination = new cp.v(e.pos.x, e.pos.y);
         }
     }
 };

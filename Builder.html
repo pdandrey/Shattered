@@ -77,9 +77,9 @@
 
         function classChanged(ddl) {
             var c = classes[ddl.value];
-            body = loadImage("resources/sprites/build/female/body_" + c.body + ".png");
-            legs = loadImage("resources/sprites/build/female/legs_" + c.legs + ".png");
-            feet = loadImage("resources/sprites/build/female/feet_" + c.feet + ".png");
+            body = loadImage("resources/sprites/female/body_" + c.body + ".png");
+            legs = loadImage("resources/sprites/female/legs_" + c.legs + ".png");
+            feet = loadImage("resources/sprites/female/feet_" + c.feet + ".png");
 
             drawCharacter();
         }
@@ -104,17 +104,17 @@
                 parts: ['map','hex','rgb','preview','swatches','footer']
             });
 
-            base = loadImage("resources/sprites/build/female/base_light.png");
-            hair = loadImage("resources/sprites/build/female/hair_loose.png");
-            body = loadImage("resources/sprites/build/female/body_leather.png");
-            feet = loadImage("resources/sprites/build/female/feet_leather.png");
-            legs = loadImage("resources/sprites/build/female/legs_leather.png");
+            base = loadImage("resources/sprites/female/base_light.png");
+            hair = loadImage("resources/sprites/female/hair_loose.png");
+            body = loadImage("resources/sprites/female/body_leather.png");
+            feet = loadImage("resources/sprites/female/feet_leather.png");
+            legs = loadImage("resources/sprites/female/legs_leather.png");
 
             drawCharacter();
         });
 
         function hairChanged(ddl) {
-            hair = loadImage("resources/sprites/build/female/hair_" + ddl.value + ".png", drawCharacter);
+            hair = loadImage("resources/sprites/female/hair_" + ddl.value + ".png", drawCharacter);
         }
 
         function colorClosed(event, args) {

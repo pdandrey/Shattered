@@ -92,7 +92,7 @@ Shattered.Objects.Entities.Mob = Shattered.Objects.Sprite.extend({
         this.stand();
 
         // AI initialization.
-        self.destination = cp.v(0, 0);
+        //self.destination = cp.v(0, 0);
 
         var shape = self.body.shapeList[0];
         self.vision = cp.bb(shape.bb_l, shape.bb_b, shape.bb_r, shape.bb_t);
@@ -114,7 +114,7 @@ Shattered.Objects.Entities.Mob = Shattered.Objects.Sprite.extend({
 
         Shattered.Status.PlayerMob = this;
         this.playerControlled = true;
-        this.destination = cp.v(0,0);
+        this.destination = null;
         this.body.resetForces();
 
         this.body.eachShape(function eachShape(shape) {
@@ -148,13 +148,14 @@ Shattered.Objects.Entities.Mob = Shattered.Objects.Sprite.extend({
     },
 
     resetRoam: function() {
-        if (this.sleep <= 0) {
+        if(this.playerControlled && this.destination) {
+            this.destination = null;
+            this.sleep = 1;
+            this.stand();
+        } else if (this.sleep <= 0) {
             // Sleep for a random period between 0 - 5 seconds.
             this.sleep = Math.random() * 5 * me.sys.fps;
             this.destination.x = this.destination.y = 0;
-
-            //this.tracking = null;
-
             this.stand();
         }
     },
@@ -178,138 +179,53 @@ Shattered.Objects.Entities.Mob = Shattered.Objects.Sprite.extend({
         this.vision.t = shape.bb_t + (dir == c.North    ? 150 : (dir == c.South ? h : 75));
     },
 
-    checkMovement: function() {
-
-        if(this.playerControlled) {
-            this.checkPlayerMovement();
-            return;
-        }
-
-        var self = this;
-
-        /*
-        if (self.angry) {
-            var space = cm.getSpace();
-            space.bbQuery(self.vision, Shattered.Chipmunk.Layers.Player, 0, function (shape) {
-                var obj = me.game.getEntityByGUID(shape.data.GUID);
-                if ((!self.tracking || (self.tracking == obj)) && !obj.angry) {
-                    // Acquire target.
-                    self.tracking = obj;
-                    self.destination.x = shape.body.p.x;
-                    self.destination.y = me.video.getHeight() - shape.body.p.y;
-
-                    // Wake up.
-                    self.sleep = 0;
-                }
-            });
-        }
-        */
-
-        if (--self.sleep > 0) {
-            return;
-        }
-
-        self.standing = false;
-
-        var x = self.body.p.x;
-        var y = me.video.getHeight() - self.body.p.y;
-
-        // Choose a nearby random point
-        if (!self.destination.x || !self.destination.y) {
-            // FIXME: Use a bounding box to set the NPC roaming zone, and
-            // cp.bbContainsBB() to validate position!
-
-            var max = self.maxDistance * 2;
-            var hMax = self.maxDistance;
-
-            self.destination.x = x + ~~(Math.random() * max - hMax);
-            self.destination.y = y + ~~(Math.random() * max - hMax);
-        }
-
-        // Decide direction to destination.
-        var force = {
-            "x" : self.destination.x - x,
-            "y" : self.destination.y - y
-        };
-
-        // Decide distance based on destTolerance.
-        force.x = (Math.abs(force.x) < self.destTolerance) ? 0 : force.x.clamp(-1, 1);
-        force.y = (Math.abs(force.y) < self.destTolerance) ? 0 : force.y.clamp(-1, 1);
-
-        // Set direction, favoring X-axis.
-        if (force.y) {
-            self.dir_name = (force.y < 0 ? "up" : "down");
-        }
-        if (force.x) {
-            self.dir_name = (force.x < 0 ? "left" : "right");
-        }
-
-        // Set animation.
-        this.sheet.walk(this);
-
-
-        // Calculate directional velocity.
-        force.x *= self.velocity * me.timer.tick;
-        force.y *= self.velocity * me.timer.tick;
-        if (force.x && force.y) {
-            force.x *= self.walk_angle;
-            force.y *= self.walk_angle;
-        }
-        // Run when tracking prey.
-//        if (self.tracking) {
-//            force.x *= 1.5;
-//            force.y *= 1.5;
-//        }
-
-        if ((self.sleep < -10) && !~~self.body.vx && !~~self.body.vy) {
-            self.resetRoam();
-        }
-        else {
-            // Walk toward the destination.
-            self.isDirty = true;
-            self.body.applyForce(cp.v(force.x * self.forceConstant, force.y * -self.forceConstant), cp.vzero);
-        }
-
-        if (~~self.body.vy !== 0) {
-            Shattered.Status.wantsResort = true;
-        }
-    },
-
-    checkPlayerMovement : function() {
-        if(this.currentAction && this.currentAction !== "walk")
-            return;
-
+    getForce: function() {
         var self = this;
 
         var force = {
             "x" : 0,
             "y" : 0
         };
-        var velocity = self.velocity;
 
-        // Set the movement speed.
-        if (!me.input.keyStatus(Shattered.Enums.Input.Run)) {
-            // Walk.
-            self.animationspeed = 6;
+        if(this.playerControlled) {
+            var velocity = self.velocity;
+            // Set the movement speed.
+            if (!me.input.keyStatus(Shattered.Enums.Input.Run)) {
+                // Walk.
+                self.animationspeed = 6;
+            }
+            else {
+                // Run.
+                velocity *= 2;
+                self.animationspeed = 3;
+            }
+            var moveForce = velocity * me.timer.tick;
+            if(me.input.isKeyPressed(Shattered.Enums.Input.North))
+                force.y -= moveForce;
+            if(me.input.isKeyPressed(Shattered.Enums.Input.South))
+                force.y += moveForce;
+            if(me.input.isKeyPressed(Shattered.Enums.Input.East))
+                force.x += moveForce;
+            if(me.input.isKeyPressed(Shattered.Enums.Input.West))
+                force.x -= moveForce;
         }
-        else {
-            // Run.
-            velocity *= 2;
-            self.animationspeed = 3;
+
+        if(this.destination && (this.destination.x || this.destination.y)) {
+            var x = self.body.p.x;
+            var y = me.video.getHeight() - self.body.p.y;
+
+            force = {
+                "x" : self.destination.x - x,
+                "y" : self.destination.y - y
+            };
+
+            // Decide distance based on destTolerance.
+            force.x = (Math.abs(force.x) < self.destTolerance) ? 0 : force.x.clamp(-1, 1);
+            force.y = (Math.abs(force.y) < self.destTolerance) ? 0 : force.y.clamp(-1, 1);
+
+            force.x *= self.velocity * me.timer.tick;
+            force.y *= self.velocity * me.timer.tick;
         }
-
-        this.standing = true;
-
-        // Walking controls.
-        var moveForce = velocity * me.timer.tick;
-        if(me.input.isKeyPressed(Shattered.Enums.Input.North))
-            force.y -= moveForce;
-        if(me.input.isKeyPressed(Shattered.Enums.Input.South))
-            force.y += moveForce;
-        if(me.input.isKeyPressed(Shattered.Enums.Input.East))
-            force.x += moveForce;
-        if(me.input.isKeyPressed(Shattered.Enums.Input.West))
-            force.x -= moveForce;
 
         if(force.x && force.y) {
             // diagonal move, slow down a little
@@ -317,24 +233,67 @@ Shattered.Objects.Entities.Mob = Shattered.Objects.Sprite.extend({
             force.y *= self.walk_angle;
         }
 
-        if(force.x || force.y)
-            this.standing = false;
+        return force;
+    },
 
-        var oldDir = this.direction;
+    getDirection: function(force) {
         if(force.y)
-            this.direction = force.y < 0 ? Shattered.Enums.Directions.North : Shattered.Enums.Directions.South;
+            return force.y < 0 ? Shattered.Enums.Directions.North : Shattered.Enums.Directions.South;
         if(force.x)
-            this.direction = force.x < 0 ? Shattered.Enums.Directions.West : Shattered.Enums.Directions.East;
+            return force.x < 0 ? Shattered.Enums.Directions.West : Shattered.Enums.Directions.East;
+        return this.direction;
+    },
 
-        // Move body and detect collisions.
-        self.body.applyForce(cp.v(force.x * self.forceConstant, force.y * -self.forceConstant), cp.vzero);
+    checkMovement: function() {
 
-        if (~~self.body.vy !== 0) {
-            Shattered.Status.wantsResort = true;
+        var self = this;
+
+        if(!this.playerControlled) {
+            if (--self.sleep > 0) {
+                return;
+            }
+
+            self.standing = false;
+
+            var x = self.body.p.x;
+            var y = me.video.getHeight() - self.body.p.y;
+
+            // Choose a nearby random point
+            if(!self.destination)
+                self.destination = new cp.v(0,0);
+
+            if (!self.destination.x || !self.destination.y) {
+                // FIXME: Use a bounding box to set the NPC roaming zone, and
+                // cp.bbContainsBB() to validate position!
+
+                var max = self.maxDistance * 2;
+                var hMax = self.maxDistance;
+
+                self.destination.x = x + ~~(Math.random() * max - hMax);
+                self.destination.y = y + ~~(Math.random() * max - hMax);
+            }
+        } else if(this.destination) {
+            --this.sleep;
         }
 
-        // Update animation if necessary.
+        // Decide direction to destination.
+        var force = this.getForce();
+
+        var oldDir = this.direction;
+        this.direction = this.getDirection(force);
+
+        // Set animation.
+        //this.sheet.walk(this);
+
         var moving = ~~self.body.vx !== 0 || ~~self.body.vy !== 0;
+
+        if (self.sleep < -10 && !moving) {
+            self.resetRoam();
+        } else {
+            // Walk toward the destination.
+            self.isDirty = true;
+            self.body.applyForce(cp.v(force.x * self.forceConstant, force.y * -self.forceConstant), cp.vzero);
+        }
 
         if(moving && (!this.currentAction || (this.currentAction === "walk" && oldDir !== this.direction))) {
             this.sheet.walk(this);
@@ -344,11 +303,16 @@ Shattered.Objects.Entities.Mob = Shattered.Objects.Sprite.extend({
             this.currentAction = null;
         }
 
+        if (~~self.body.vy !== 0) {
+            Shattered.Status.wantsResort = true;
+        }
+
         self.isDirty = (self.isDirty || moving);
     },
 
     interact: function(actor) {
         // Turn 2 clicks (180 degrees) from actor's direction.
+        this.body.resetForces();
         this.turn(2, actor.direction);
         Shattered.dialog(["Why hello there. How are you? I like dresses. Why hello there. How are you? I like dresses. Why hello there. How are you? I like dresses. Why hello there. How are you? I like dresses. Why hello there. How are you? I like dresses. Why hello there. How are you? I like dresses. Why hello there. How are you? I like dresses. Why hello there. How are you? I like dresses."]);
     },
@@ -356,7 +320,7 @@ Shattered.Objects.Entities.Mob = Shattered.Objects.Sprite.extend({
     checkInteraction: function() {
         if(!this.playerControlled) {
             // TODO: NPC AI.
-            return;
+            return false;
         }
 
         var self = this;
@@ -384,6 +348,7 @@ Shattered.Objects.Entities.Mob = Shattered.Objects.Sprite.extend({
             cm.getSpace().bbQuery(sensor, Shattered.Chipmunk.Layers.Interactive, 0, function onBBQuery(shape) {
                 // DO SOMETHING!
                 //console.log("interact with %o", shape.data.GUID);
+                self.body.resetForces();
                 self.target = me.game.getEntityByGUID(shape.data.GUID);
                 self.target.interact(self);
                 interacted = true;
@@ -393,8 +358,11 @@ Shattered.Objects.Entities.Mob = Shattered.Objects.Sprite.extend({
                 self.body.resetForces();
                 self.currentAction = "melee";
                 self.sheet.slash(this, function() { self.currentAction = null; self.stand(); }, function() { self.children.sword.slash(); });
+                interacted = true;
             }
+            return interacted;
         }
+        return false;
     },
 
     // Turn NPC clockwise by a certain number of clicks, with optional starting direction.
@@ -412,16 +380,19 @@ Shattered.Objects.Entities.Mob = Shattered.Objects.Sprite.extend({
     },
 
     update: function() {
-        if(!Shattered.Control.updateAllowed(this))
+        if(!Shattered.Control.updateAllowed(this)) {
             return false;
+        }
 
         this.isDirty = false;
 
         this.body.resetForces();
 
+        if(this.checkInteraction())
+            return false;
+
         this.updateVision();
         this.checkMovement();
-        this.checkInteraction();
 
         return this.parent() || this.isDirty;
     },
@@ -434,11 +405,13 @@ Shattered.Objects.Entities.Mob = Shattered.Objects.Sprite.extend({
             var viewport = me.game.viewport.pos;
 
             // Draw a line to the destination.
-            if (this.destination.x || this.destination.y) {
-                context.strokeStyle = "red";
-                context.moveTo(this.body.p.x - viewport.x, me.video.getHeight() - this.body.p.y - viewport.y);
-                context.lineTo(this.destination.x - viewport.x, this.destination.y - viewport.y);
-                context.stroke();
+            if(this.destination) {
+                if (this.destination.x || this.destination.y) {
+                    context.strokeStyle = "red";
+                    context.moveTo(this.body.p.x - viewport.x, me.video.getHeight() - this.body.p.y - viewport.y);
+                    context.lineTo(this.destination.x - viewport.x, this.destination.y - viewport.y);
+                    context.stroke();
+                }
             }
 
             /*

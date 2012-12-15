@@ -41,6 +41,9 @@ Shattered.Control = (function() {
 
             case MODES.Modal:
                 return false;
+
+            default:
+                throw "Unknown mode";
         }
     }
 
