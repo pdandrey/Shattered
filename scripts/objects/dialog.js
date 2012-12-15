@@ -93,6 +93,7 @@ Shattered.Objects.DialogObject = Object.extend({
         this.callback = callback;
         this.visible = true;
         Shattered.Control.dialog(this);
+        this.GUID = me.utils.createGUID();
     },
 
     getWords: function(text) {

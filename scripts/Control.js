@@ -22,14 +22,14 @@ Shattered.Control = (function() {
 
     var MODES = { Normal: 1, Battle: 2, Modal: 3 };
 
-    var disabled = [];
-    var enabled = [];
+    var disabled = {};
+    var enabled = {};
     var mode = MODES.Normal;
 
     function updatedAllowed(item) {
-        if(disabled.indexOf(item) !== -1)
+        if(disabled[item.GUID])
             return false;
-        if(enabled.indexOf(item) !== -1)
+        if(enabled[item.GUID])
             return true;
 
         switch(mode) {
@@ -48,7 +48,8 @@ Shattered.Control = (function() {
     }
 
     function normal() {
-        disabled.length = enabled.length = 0;
+        disabled = {};
+        enabled = {};
         mode = MODES.Normal;
     }
 
@@ -57,29 +58,29 @@ Shattered.Control = (function() {
     }
 
     function modal(dialog) {
-        enabled.push(dialog);
+        enableEntity(dialog);
         mode = MODES.Modal;
     }
 
     function dialog(dialog) {
-        console.log("dialog control for %o", Shattered.Status.PlayerMob);
-        disabled.push(Shattered.Status.PlayerMob, Shattered.Status.PlayerMob.target);
-        enabled.push(dialog);
+        disableEntity(Shattered.Status.PlayerMob);
+        disableEntity(Shattered.Status.PlayerMob.target);
+        enableEntity(dialog);
     }
 
     function disableEntity(entity) {
-        if(disabled.indexOf(entity) !== -1)
-            disabled.push(entity);
+        disabled[entity.GUID] = true;
+        delete enabled[entity.GUID];
     }
 
     function enableEntity(entity) {
-        var idx = disabled.indexOf(entity);
-        if(idx !== -1) {
-            if(idx === disabled.length - 1)
-                disabled.pop();
-            else
-                delete disabled[idx];
-        }
+        delete disabled[entity.GUID];
+        enabled[entity.GUID] = true;
+    }
+
+    function resetEntity(entity) {
+        delete disabled[entity.GUID];
+        delete enabled[entity.GUID];
     }
 
     var ret = {
@@ -89,7 +90,8 @@ Shattered.Control = (function() {
         dialog: dialog,
         updateAllowed: updatedAllowed,
         disable: disableEntity,
-        enable: enableEntity
+        enable: enableEntity,
+        reset: resetEntity
     };
 
     return ret;
