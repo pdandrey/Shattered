@@ -36,6 +36,7 @@ Shattered.Objects.Entities.Chest = Shattered.Objects.Sprite.extend({
 
     interact: function(actor, callback) {
         if(!this.isOpened) {
+            Shattered.Control.disable(actor);
             this.animationpause = false;
             this.actor = actor;
             this.callback = callback;

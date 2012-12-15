@@ -67,12 +67,29 @@ Shattered.Control = (function() {
         enabled.push(dialog);
     }
 
+    function disableEntity(entity) {
+        if(disabled.indexOf(entity) !== -1)
+            disabled.push(entity);
+    }
+
+    function enableEntity(entity) {
+        var idx = disabled.indexOf(entity);
+        if(idx !== -1) {
+            if(idx === disabled.length - 1)
+                disabled.pop();
+            else
+                delete disabled[idx];
+        }
+    }
+
     var ret = {
         normal: normal,
         battle: battle,
         modal: modal,
         dialog: dialog,
-        updateAllowed: updatedAllowed
+        updateAllowed: updatedAllowed,
+        disable: disableEntity,
+        enable: enableEntity
     };
 
     return ret;
