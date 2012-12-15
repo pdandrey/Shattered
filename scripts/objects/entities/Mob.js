@@ -88,7 +88,9 @@ Shattered.Objects.Entities.Mob = Shattered.Objects.Sprite.extend({
         this.currentAction = null;
         this.stand();
 
-        self.destination = new Shattered.Objects.Destination(this, settings.path);
+        if(settings.pathData)
+            settings.pathData = JSON.parse(settings.pathData);
+        self.destination = new Shattered.Objects.Destination(this, settings.pathData);
 
         var shape = self.body.shapeList[0];
         self.vision = cp.bb(shape.bb_l, shape.bb_b, shape.bb_r, shape.bb_t);

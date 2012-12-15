@@ -62,8 +62,8 @@
         if(pathData) {
             if(!Array.isArray(pathData.path))
                 throw "pathData.path must be an array";
-            for(var i=pathData.length-1; i>=0; --i) {
-                if(pathData[i].x == null || pathData[i].y == null)
+            for(var i=pathData.path.length-1; i>=0; --i) {
+                if(pathData.path[i].x == null || pathData.path[i].y == null)
                     throw "pathData[" + i + "] is not correctly formed.";
             }
             if(pathData.repeat == null)
@@ -156,10 +156,10 @@
                 return;
             }
 
-            var nextDest = this._pathData[this._pathData.idx];
+            var nextDest = this._pathData.path[this._pathData._idx];
             this._destination = new cp.v(nextDest.x, nextDest.y);
             ++this._pathData._idx;
-            if(this._pathData._idx >= this._pathData.path) {
+            if(this._pathData._idx >= this._pathData.path.length) {
                 if(this._pathData.callback)
                     this._pathData.callback();
                 if(this._pathData.repeat)
