@@ -73,7 +73,7 @@ var Shattered = {
         }
 
         function mouseClick(e) {
-            Shattered.Status.PlayerMob.destination = new cp.v(e.pos.x, e.pos.y);
+            Shattered.Status.PlayerMob.destination.setDestination(e.pos.x, e.pos.y);
         }
     }
 };

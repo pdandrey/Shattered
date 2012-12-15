@@ -51,9 +51,6 @@ Shattered.Objects.Entities.Mob = Shattered.Objects.Sprite.extend({
     // Walking speed. (forceConstant is multiplied by velocity for the final force applied.)
     velocity: 2,
 
-    // A helper constant.
-    walk_angle: Math.sin((45).degToRad()),
-
     playerControlled: false,
 
     /**
@@ -91,8 +88,7 @@ Shattered.Objects.Entities.Mob = Shattered.Objects.Sprite.extend({
         this.currentAction = null;
         this.stand();
 
-        // AI initialization.
-        //self.destination = cp.v(0, 0);
+        self.destination = new Shattered.Objects.Destination(this, settings.path);
 
         var shape = self.body.shapeList[0];
         self.vision = cp.bb(shape.bb_l, shape.bb_b, shape.bb_r, shape.bb_t);
@@ -114,7 +110,6 @@ Shattered.Objects.Entities.Mob = Shattered.Objects.Sprite.extend({
 
         Shattered.Status.PlayerMob = this;
         this.playerControlled = true;
-        this.destination = null;
         this.body.resetForces();
 
         this.body.eachShape(function eachShape(shape) {
@@ -148,14 +143,14 @@ Shattered.Objects.Entities.Mob = Shattered.Objects.Sprite.extend({
     },
 
     resetRoam: function() {
-        if(this.playerControlled && this.destination) {
-            this.destination = null;
+        if(this.playerControlled) {
+            this.destination.clear();
             this.sleep = 1;
             this.stand();
         } else if (this.sleep <= 0) {
             // Sleep for a random period between 0 - 5 seconds.
             this.sleep = Math.random() * 5 * me.sys.fps;
-            this.destination.x = this.destination.y = 0;
+            this.destination.clear();
             this.stand();
         }
     },
@@ -179,69 +174,13 @@ Shattered.Objects.Entities.Mob = Shattered.Objects.Sprite.extend({
         this.vision.t = shape.bb_t + (dir == c.North    ? 150 : (dir == c.South ? h : 75));
     },
 
-    getForce: function() {
-        var self = this;
-
-        var force = {
-            "x" : 0,
-            "y" : 0
-        };
-
-        if(this.playerControlled) {
-            var velocity = self.velocity;
-            // Set the movement speed.
-            if (!me.input.keyStatus(Shattered.Enums.Input.Run)) {
-                // Walk.
-                self.animationspeed = 6;
-            }
-            else {
-                // Run.
-                velocity *= 2;
-                self.animationspeed = 3;
-            }
-            var moveForce = velocity * me.timer.tick;
-            if(me.input.isKeyPressed(Shattered.Enums.Input.North))
-                force.y -= moveForce;
-            if(me.input.isKeyPressed(Shattered.Enums.Input.South))
-                force.y += moveForce;
-            if(me.input.isKeyPressed(Shattered.Enums.Input.East))
-                force.x += moveForce;
-            if(me.input.isKeyPressed(Shattered.Enums.Input.West))
-                force.x -= moveForce;
-        }
-
-        if(this.destination && (this.destination.x || this.destination.y)) {
-            var x = self.body.p.x;
-            var y = me.video.getHeight() - self.body.p.y;
-
-            force = {
-                "x" : self.destination.x - x,
-                "y" : self.destination.y - y
-            };
-
-            // Decide distance based on destTolerance.
-            force.x = (Math.abs(force.x) < self.destTolerance) ? 0 : force.x.clamp(-1, 1);
-            force.y = (Math.abs(force.y) < self.destTolerance) ? 0 : force.y.clamp(-1, 1);
-
-            force.x *= self.velocity * me.timer.tick;
-            force.y *= self.velocity * me.timer.tick;
-        }
-
-        if(force.x && force.y) {
-            // diagonal move, slow down a little
-            force.x *= self.walk_angle;
-            force.y *= self.walk_angle;
-        }
-
-        return force;
-    },
-
     getDirection: function(force) {
         if(force.y)
             return force.y < 0 ? Shattered.Enums.Directions.North : Shattered.Enums.Directions.South;
-        if(force.x)
+        else if(force.x)
             return force.x < 0 ? Shattered.Enums.Directions.West : Shattered.Enums.Directions.East;
-        return this.direction;
+        else
+            return this.direction;
     },
 
     checkMovement: function() {
@@ -253,31 +192,15 @@ Shattered.Objects.Entities.Mob = Shattered.Objects.Sprite.extend({
                 return;
             }
 
-            self.standing = false;
+            if(this.destination.isDestinationReached())
+                this.destination.next();
 
-            var x = self.body.p.x;
-            var y = me.video.getHeight() - self.body.p.y;
-
-            // Choose a nearby random point
-            if(!self.destination)
-                self.destination = new cp.v(0,0);
-
-            if (!self.destination.x || !self.destination.y) {
-                // FIXME: Use a bounding box to set the NPC roaming zone, and
-                // cp.bbContainsBB() to validate position!
-
-                var max = self.maxDistance * 2;
-                var hMax = self.maxDistance;
-
-                self.destination.x = x + ~~(Math.random() * max - hMax);
-                self.destination.y = y + ~~(Math.random() * max - hMax);
-            }
-        } else if(this.destination) {
+        } else if(!this.destination.isDestinationReached()) {
             --this.sleep;
         }
 
         // Decide direction to destination.
-        var force = this.getForce();
+        var force = this.destination.getForce();
 
         var oldDir = this.direction;
         this.direction = this.getDirection(force);
@@ -401,37 +324,20 @@ Shattered.Objects.Entities.Mob = Shattered.Objects.Sprite.extend({
         this.parent(context, x, y);
 
         if (Shattered.Settings.debug) {
-            context.save();
-            var viewport = me.game.viewport.pos;
-
             // Draw a line to the destination.
-            if(this.destination) {
-                if (this.destination.x || this.destination.y) {
-                    context.strokeStyle = "red";
-                    context.moveTo(this.body.p.x - viewport.x, me.video.getHeight() - this.body.p.y - viewport.y);
-                    context.lineTo(this.destination.x - viewport.x, this.destination.y - viewport.y);
-                    context.stroke();
-                }
-            }
+            this.destination.draw(context, x, y);
 
-            /*
-            // Draw the vision box.
-            if (this.angry) {
-                context.lineWidth = 2;
-                context.strokeStyle = (this.tracking ? "red" : "orange");
-            }
-            else {
-            */
-                context.lineWidth = 1;
-                context.strokeStyle = "green";
-            //}
-
+            context.save();
+            context.lineWidth = 1;
+            context.strokeStyle = "green";
+            var viewport = me.game.viewport.pos;
             context.strokeRect(
                 this.vision.l - viewport.x,
                 me.video.getHeight() - this.vision.t - viewport.y,
                 this.vision.r - this.vision.l,
                 this.vision.t - this.vision.b
             );
+            context.restore();
         }
     }
 });
