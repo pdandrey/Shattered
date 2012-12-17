@@ -205,10 +205,16 @@ Shattered.Objects.Entities.Mob = Shattered.Objects.Sprite.extend({
 
         if(!this.playerControlled) {
             if (--self.sleep > 0) {
-                return;
+                return false;
             }
 
-            if(this.destination.isDestinationReached())
+            if(this.destination.hasDestination() && this.destination.isDestinationReached()) {
+                if(this.destination.isPathComplete())
+                    console.log("%s finished the path", this.name);
+                this.resetRoam();
+                return false;
+            }
+            else if(!this.destination.hasDestination())
                 this.destination.next();
 
         } else if(!this.destination.isDestinationReached()) {
@@ -226,7 +232,6 @@ Shattered.Objects.Entities.Mob = Shattered.Objects.Sprite.extend({
         var moving = ~~self.body.vx !== 0 || ~~self.body.vy !== 0;
 
         if ((this.destination.hasDestination() && this.destination.isDestinationReached()) || (self.sleep < -10 && !moving)) {
-            console.log("%s is resetting", this.name);
             self.resetRoam();
         } else {
             // Walk toward the destination.

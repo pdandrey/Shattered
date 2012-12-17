@@ -53,7 +53,6 @@
      * @param {object} [pathData] Object containing the predefined path for the mob
      * @param {object[]} pathData.path Array of {x,y} coordinates to follow
      * @param {boolean} [pathData.repeat=true] Should the path loop? (return to starting position after path[last])
-     * @param {function} [pathData.callback] Callback when the final point is reached.
      * @constructor
      */
     Shattered.Objects.Destination = function(mob, pathData) {
@@ -93,6 +92,16 @@
             //&& ~~this._mob.body.vx < 2
             //&& ~~this._mob.body.vy < 2;
     };
+
+    Shattered.Objects.Destination.prototype.isPathComplete = function() {
+        if(!this._pathData)
+            return false;
+
+        if(!this.isDestinationReached())
+            return false;
+
+        return this._pathData.path.length === this._pathData._idx;
+    }
 
     Shattered.Objects.Destination.prototype.getForce = function() {
         var velocity = this._mob.velocity;
@@ -166,18 +175,14 @@
                 return;
             }
 
+            if(this._pathData._idx >= this._pathData.path.length) {
+                if(this._pathData.repeat)
+                    this._pathData._idx = 0;
+            }
+
             var nextDest = this._pathData.path[this._pathData._idx];
             this._destination = cp.v(nextDest.x, nextDest.y);
             ++this._pathData._idx;
-            if(this._pathData._idx >= this._pathData.path.length) {
-                if(this._pathData.callback)
-                    this._pathData.callback(this, new Shattered.Objects.Destination.DestinationReachedEventArgs(true));
-                if(this._pathData.repeat)
-                    this._pathData._idx = 0;
-            } else {
-                if(this._pathData.callback)
-                    this._pathData.callback(this, new Shattered.Objects.Destination.DestinationReachedEventArgs(false));
-            }
         } else {
             // random destination
 
@@ -210,14 +215,5 @@
 
     Shattered.Objects.Destination.prototype.setDestination = function(x, y) {
         this._destination = new cp.v(x, y);
-    }
-
-    /**
-     * Event arguments for when a destination is reached
-     * @param {boolean} pathComplete True if the destination is the final of a scripted path.
-     * @constructor
-     */
-    Shattered.Objects.Destination.DestinationReachedEventArgs = function(pathComplete) {
-        this.isPathComplete = pathComplete;
     }
 })();
