@@ -68,7 +68,7 @@
   </object>
   <object name="mob" x="224" y="96" width="32" height="32">
    <properties>
-    <property name="charactername" value="npc"/>
+    <property name="charactername" value="npc2"/>
     <property name="image" value="princess"/>
     <property name="pathData" value="{&quot;path&quot;:[{&quot;x&quot;:256,&quot;y&quot;:256},{&quot;x&quot;:416,&quot;y&quot;:96}], &quot;repeat&quot;: true}"/>
     <property name="player" value="false"/>

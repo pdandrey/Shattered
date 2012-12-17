@@ -16,6 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+"use strict";
+
 /* NPCs */
 Shattered.Objects.Entities.Mob = Shattered.Objects.Sprite.extend({
     // Bounding Box where this NPC can see.
@@ -88,8 +90,10 @@ Shattered.Objects.Entities.Mob = Shattered.Objects.Sprite.extend({
         this.currentAction = null;
         this.stand();
 
-        if(settings.pathData)
+        if(settings.pathData) {
             settings.pathData = JSON.parse(settings.pathData);
+            settings.pathData.callback = this.pathComplete.bind(this);
+        }
         self.destination = new Shattered.Objects.Destination(this, settings.pathData);
 
         var shape = self.body.shapeList[0];
@@ -104,6 +108,16 @@ Shattered.Objects.Entities.Mob = Shattered.Objects.Sprite.extend({
         } else {
             this.setAIControlled();
         }
+    },
+
+    /**
+     * callback when a path is finished
+     * @param {Shattered.Objects.Destination} sender the destination
+     * @param {Shattered.Objects.Destination.DestinationReachedEventArgs} args
+     */
+    pathComplete: function(sender, args) {
+        //console.log("%s has completed a path segment.  Path Complete: %s", this.name, args.isPathComplete);
+        //this.resetRoam();
     },
 
     setPlayerControlled: function() {
@@ -207,17 +221,16 @@ Shattered.Objects.Entities.Mob = Shattered.Objects.Sprite.extend({
         var oldDir = this.direction;
         this.direction = this.getDirection(force);
 
-        // Set animation.
-        //this.sheet.walk(this);
+        self.body.applyForce(cp.v(force.x * self.forceConstant, force.y * -self.forceConstant), cp.vzero);
 
         var moving = ~~self.body.vx !== 0 || ~~self.body.vy !== 0;
 
-        if (self.sleep < -10 && !moving) {
+        if ((this.destination.hasDestination() && this.destination.isDestinationReached()) || (self.sleep < -10 && !moving)) {
+            console.log("%s is resetting", this.name);
             self.resetRoam();
         } else {
             // Walk toward the destination.
             self.isDirty = true;
-            self.body.applyForce(cp.v(force.x * self.forceConstant, force.y * -self.forceConstant), cp.vzero);
         }
 
         if(moving && (!this.currentAction || (this.currentAction === "walk" && oldDir !== this.direction))) {
@@ -230,6 +243,10 @@ Shattered.Objects.Entities.Mob = Shattered.Objects.Sprite.extend({
 
         if (~~self.body.vy !== 0) {
             Shattered.Status.wantsResort = true;
+        }
+
+        if(this.destination.isDestinationReached()) {
+           // console.log("%s post check reached", this.name);
         }
 
         self.isDirty = (self.isDirty || moving);

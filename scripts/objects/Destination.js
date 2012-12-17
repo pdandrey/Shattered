@@ -78,13 +78,20 @@
         this._pathData = pathData || null;
     };
 
+    Shattered.Objects.Destination.prototype.hasDestination = function() {
+        return this._destination !== null;
+    }
+
     Shattered.Objects.Destination.prototype.isDestinationReached = function() {
         if(!this._destination)
             return true;
+
         var x = this._mob.body.p.x;
         var y = Shattered.Utility.getHeight() - this._mob.body.p.y;
         return Math.abs(this._destination.x - x) < this._mob.destTolerance
             && Math.abs(this._destination.y - y) < this._mob.destTolerance;
+            //&& ~~this._mob.body.vx < 2
+            //&& ~~this._mob.body.vy < 2;
     };
 
     Shattered.Objects.Destination.prototype.getForce = function() {
@@ -157,13 +164,16 @@
             }
 
             var nextDest = this._pathData.path[this._pathData._idx];
-            this._destination = new cp.v(nextDest.x, nextDest.y);
+            this._destination = cp.v(nextDest.x, nextDest.y);
             ++this._pathData._idx;
             if(this._pathData._idx >= this._pathData.path.length) {
                 if(this._pathData.callback)
-                    this._pathData.callback();
+                    this._pathData.callback(this, new Shattered.Objects.Destination.DestinationReachedEventArgs(true));
                 if(this._pathData.repeat)
                     this._pathData._idx = 0;
+            } else {
+                if(this._pathData.callback)
+                    this._pathData.callback(this, new Shattered.Objects.Destination.DestinationReachedEventArgs(false));
             }
         } else {
             // random destination
@@ -179,7 +189,7 @@
             var max = this._mob.maxDistance * 2;
             var hMax = this._mob.maxDistance;
 
-            this._destination = new cp.v(x + ~~(Math.random() * max - hMax), y + ~~(Math.random() * max - hMax));
+            this._destination = cp.v(x + ~~(Math.random() * max - hMax), y + ~~(Math.random() * max - hMax));
         }
     };
 
@@ -199,4 +209,12 @@
         this._destination = new cp.v(x, y);
     }
 
+    /**
+     * Event arguments for when a destination is reached
+     * @param {boolean} pathComplete True if the destination is the final of a scripted path.
+     * @constructor
+     */
+    Shattered.Objects.Destination.DestinationReachedEventArgs = function(pathComplete) {
+        this.isPathComplete = pathComplete;
+    }
 })();
