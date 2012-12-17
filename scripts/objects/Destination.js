@@ -104,8 +104,11 @@
             var x = this._mob.body.p.x;
             var y = me.video.getHeight() - this._mob.body.p.y;
 
-            force.x = (this._destination.x - x).clamp(-1, 1) * moveForce;
-            force.y = (this._destination.y - y).clamp(-1, 1) * moveForce;
+            force.x = (this._destination.x - x);//.clamp(-1, 1) * moveForce;
+            force.y = (this._destination.y - y);//.clamp(-1, 1) * moveForce;
+
+            force.x = Math.abs(force.x) < this._mob.destTolerance ? 0 : force.x.clamp(-1, 1) * moveForce;
+            force.y = Math.abs(force.y) < this._mob.destTolerance ? 0 : force.y.clamp(-1, 1) * moveForce;
         }
 
         if(this._mob.playerControlled) {
