@@ -21,6 +21,15 @@
         </select>
     </div>
     <div>
+        Skin Tone:
+        <select id="ddlTone" onchange="toneChanged(this);">
+            <option value="light">Light</option>
+            <option value="tanned">Light Tan</option>
+            <option value="tanned2">Dark Tan</option>
+            <option value="dark">Dark</option>
+        </select>
+    </div>
+    <div>
         Hair Style:
         <select id="ddlHair" onchange="hairChanged(this);">
             <option value="bangs_long" data-gender="female">Long Bangs</option>
@@ -151,8 +160,13 @@
                     .end()
                     .val($("#ddlHair > option:visible:first").val());
 
-            base = loadImage("resources/sprites/" + gender + "/base_light.png");
+            base = loadImage("resources/sprites/" + gender + "/base_" + $("#ddlTone").val() + ".png");
             classChanged($("#ddlClass")[0])
+        }
+
+        function toneChanged(ddl) {
+            base = loadImage("resources/sprites/" + gender + "/base_" + ddl.value + ".png");
+            drawCharacter();
         }
 
         function colorClosed(event, args) {
