@@ -14,16 +14,34 @@
 </head>
 <body>
     <div>
+        Gender:
+        <select onchange="genderChanged(this);">
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+        </select>
+    </div>
+    <div>
         Hair Style:
-        <select onchange="hairChanged(this);">
-            <option value="bangs_long">Long Bangs</option>
-            <option value="bangs_short">Short Bangs</option>
-            <option value="loose" selected>Loose</option>
-            <option value="pixie">Pixie</option>
-            <option value="ponytail">Ponytail</option>
-            <option value="princess">Princess</option>
-            <option value="swoop">Swoop</option>
-            <option value="unkempt">Unkempt</option>
+        <select id="ddlHair" onchange="hairChanged(this);">
+            <option value="bangs_long" data-gender="female">Long Bangs</option>
+            <option value="bangs_short" data-gender="female">Short Bangs</option>
+            <option value="bangs" selected data-gender="male">Bangs</option>
+            <option value="bedhead" data-gender="male">Bed Head</option>
+            <option value="long" data-gender="male">Long</option>
+            <option value="longhawk" data-gender="male">Long Mohawk</option>
+            <option value="loose" data-gender="female">Loose</option>
+            <option value="messy" data-gender="male">Messy 1</option>
+            <option value="messy2" data-gender="male">Messy 2</option>
+            <option value="mohawk" data-gender="male">Mohawk</option>
+            <option value="page" data-gender="male">Page</option>
+            <option value="parted" data-gender="male">Parted</option>
+            <option value="pixie" data-gender="female">Pixie</option>
+            <option value="ponytail" data-gender="female">Ponytail</option>
+            <option value="princess" data-gender="female">Princess</option>
+            <option value="shorthawk" data-gender="male">Short Mohawk</option>
+            <option value="swoop" data-gender="female">Swoop</option>
+            <option value="unkempt" data-gender="female">Unkempt</option>
+
         </select>
     </div>
     <div>
@@ -31,7 +49,7 @@
     </div>
     <div>
         Class:
-        <select onchange="classChanged(this);">
+        <select id="ddlClass" onchange="classChanged(this);">
             <option value="fighter">Scrapper</option>
             <option value="engineer">Engineer</option>
             <option value="rogue">Sneak</option>
@@ -48,24 +66,26 @@
 
     <script>
 
+        var gender = "male";
+
         var classes = {
             fighter: {
                 name: "Scrapper",
                 body: "leather",
-                legs: "leather",
-                feet: "leather"
+                legs: "cloth_green",
+                feet: "brown"
             },
             engineer: {
                 name: "Engineer",
-                body: "shirt",
-                legs: "leather",
-                feet: "leather"
+                body: "white",
+                legs: "cloth_green",
+                feet: "brown"
             },
             rogue: {
                 name: "Sneak",
-                body: "tanktop",
-                legs: "red",
-                feet: "leather"
+                body: "white",
+                legs: "cloth_red",
+                feet: "brown"
             }
         };
 
@@ -77,14 +97,19 @@
 
         function classChanged(ddl) {
             var c = classes[ddl.value];
-            body = loadImage("resources/sprites/female/body_" + c.body + ".png");
-            legs = loadImage("resources/sprites/female/legs_" + c.legs + ".png");
-            feet = loadImage("resources/sprites/female/feet_" + c.feet + ".png");
+            body = loadImage("resources/sprites/" + gender + "/body_" + c.body + ".png");
+            legs = loadImage("resources/sprites/" + gender + "/legs_" + c.legs + ".png");
+            feet = loadImage("resources/sprites/" + gender + "/feet_" + c.feet + ".png");
 
             drawCharacter();
         }
 
         $(function () {
+            $("#ddlHair")
+                    .children("option[data-gender=" + gender + "]").show()
+                    .end()
+                    .children("option[data-gender!=" + gender + "]").hide();
+
             $("#clrHair").val("rgb(" + hairColor.join(",") + ")").colorpicker({
                 buttonColorize: true,
                 buttonImageOnly: true,
@@ -104,17 +129,30 @@
                 parts: ['map','hex','rgb','preview','swatches','footer']
             });
 
-            base = loadImage("resources/sprites/female/base_light.png");
-            hair = loadImage("resources/sprites/female/hair_loose.png");
-            body = loadImage("resources/sprites/female/body_leather.png");
-            feet = loadImage("resources/sprites/female/feet_leather.png");
-            legs = loadImage("resources/sprites/female/legs_leather.png");
+            base = loadImage("resources/sprites/" + gender + "/base_light.png");
+            hair = loadImage("resources/sprites/" + gender + "/hair_" + $("#ddlHair").val() + ".png");
+            body = loadImage("resources/sprites/" + gender + "/body_leather.png");
+            feet = loadImage("resources/sprites/" + gender + "/feet_brown.png");
+            legs = loadImage("resources/sprites/" + gender + "/legs_cloth_green.png");
 
             drawCharacter();
         });
 
         function hairChanged(ddl) {
-            hair = loadImage("resources/sprites/female/hair_" + ddl.value + ".png", drawCharacter);
+            hair = loadImage("resources/sprites/" + gender + "/hair_" + ddl.value + ".png", drawCharacter);
+        }
+
+        function genderChanged(ddl) {
+            gender = ddl.value;
+            $("#ddlHair")
+                    .children("option[data-gender=" + gender + "]").show()
+                    .end()
+                    .children("option[data-gender!=" + gender + "]").hide()
+                    .end()
+                    .val($("#ddlHair > option:visible:first").val());
+
+            base = loadImage("resources/sprites/" + gender + "/base_light.png");
+            classChanged($("#ddlClass")[0])
         }
 
         function colorClosed(event, args) {
@@ -131,13 +169,17 @@
             drawCharacter();
         }
 
-        function drawCharacter() {
+        function drawCharacter(count) {
             var i;
+            count = count || 1;
             var layers = [base, hair, feet, body, legs];
             for(i=0; i<layers.length; ++i) {
                 if(layers[i] != null && !layers[i]["data-loaded"]) {
-                    console.log("delaying init2");
-                    setTimeout(drawCharacter, 500);
+                    console.log("delaying draw count %d", count);
+                    if(count > 10) {
+                        throw "delayed drawing for " + count + ". giving up";
+                    }
+                    setTimeout(function() { drawCharacter(count+1) }, 500);
                     return;
                 }
             }
