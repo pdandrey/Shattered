@@ -157,6 +157,32 @@ Shattered.Resources = (function() {
         me.loader.preload(resources);
     }
 
+    function getImageKey(name, gender) {
+        if(!name)
+            throw "name is required for getImageKey";
+        gender = gender || Shattered.Enums.Gender.None;
+
+        switch(gender) {
+            case Shattered.Enums.Gender.Male:
+                gender = "male";
+                break;
+
+            case Shattered.Enums.Gender.Female:
+                gender = "female";
+                break;
+
+            case Shattered.Enums.Gender.None:
+                gender = "general";
+                break;
+
+            default:
+                throw "Unknown gender: " + gender;
+                break;
+        }
+
+        return gender + "_" + name;
+    }
+
     return {
         load: load,
         /**
@@ -164,6 +190,10 @@ Shattered.Resources = (function() {
          * @param name The name of the spritesheet
          * @return {Shattered.Objects.SpriteSheet}
          */
-        getSpriteSheet: function(name) { return spritesheets[name.toLowerCase()]; }
+        getSpriteSheet: function(name) { return spritesheets[name.toLowerCase()]; },
+        getImage: function() {
+
+        },
+        getImageKey: getImageKey
     }
 })();

@@ -27,5 +27,11 @@ Shattered.Enums = {
     Input: { North: "north", South: "south", East: "east", West: "west", Action: "action", Run: "run" },
 
     /** @enum {int} */
-    Updates: { Player: 1, NPC: 2, Dialog: 4 }
+    Updates: { Player: 1, NPC: 2, Dialog: 4 },
+
+    /** @enum {int} */
+    EquipmentSlot: { Head: 1, Body: 2, Hands: 3, Legs: 4, Feet: 5, MainHand: 6, OffHand: 7 },
+
+    /** @enum {int} */
+    Gender: { Male: 1, Female: 2, None: 3 }
 };
