@@ -43,7 +43,6 @@
 
 "use strict";
 
-Shattered.Objects.Items = {};
 Shattered.Objects.Items.Item = Object.extend({
     __classname: "Item",
 
@@ -55,6 +54,7 @@ Shattered.Objects.Items.Item = Object.extend({
      * @constructor
      */
     init: function(properties) {
-        this.name = properties.name;
+        this._properties = properties;
+        Object.defineProperty(this, "name", {value: properties.name, writable: false, configurable: false, enumerable: true });
     }
 });
