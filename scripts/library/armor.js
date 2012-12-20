@@ -19,5 +19,28 @@
 "use strict";
 
 Shattered.Library.Armor = {
-
+    Body: {
+        "Worn Leather": new Shattered.Objects.Items.Armor({
+            name: "Worn Leather",
+            slot: Shattered.Enums.EquipmentSlot.Body,
+            type: Shattered.Enums.ArmorType.Leather,
+            sprites: ["leather"]
+        })
+    },
+    Legs: {
+        "Worn Leather Pants": new Shattered.Objects.Items.Armor({
+            name: "Worn Leather Pants",
+            slot: Shattered.Enums.EquipmentSlot.Legs,
+            type: Shattered.Enums.ArmorType.Leather,
+            sprites: ["cloth_green"]
+        })
+    },
+    Feet: {
+        "Worn Leather Shoes": new Shattered.Objects.Items.Armor({
+            name: "Worn Leather Shoes",
+            slot: Shattered.Enums.EquipmentSlot.Feet,
+            type: Shattered.Enums.ArmorType.Leather,
+            sprites: ["brown"]
+        })
+    }
 };

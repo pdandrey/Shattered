@@ -36,5 +36,26 @@ Shattered.Enums = {
     Gender: { Male: 1, Female: 2, None: 3 },
 
     /** @enum {int} */
-    ArmorType: { Cloth: 1, Leather: 2, Chain: 3, Plate: 4 }
+    ArmorType: { Cloth: 1, Leather: 2, Chain: 3, Plate: 4 },
+
+    /** @enum {int} */
+    SpriteDrawOrder: {
+        Base: 0,
+        PreFeet: 1,
+        Feet: 2,
+        PostFeet: 3,
+        PreLegs: 4,
+        Legs: 5,
+        PostLegs: 6,
+        PreBody: 7,
+        Body: 8,
+        PostBody: 9,
+        PreHead: 10,
+        Head: 11,
+        PostHead: 12,
+        PreWeapon: 13,
+        Weapon: 14,
+        PostWeapon: 15,
+        Last: 16
+    }
 };

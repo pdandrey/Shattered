@@ -24,33 +24,107 @@ Shattered.Objects.Items.Equipment = Shattered.Objects.Items.Item.extend({
     /**
      * Creates a new piece of equipment
      * @param {object} properties Properties of the item
-     * @param {object} properties.sprites Definition of the images used for sprites
-     * @param {Shattered.Objects.Items.Equipment.EquipmentSprite[]} properties.sprites.male
-     * @param {Shattered.Objects.Items.Equipment.EquipmentSprite[]} properties.sprites.female
+     * @param {object|string[]} properties.sprites Definition of the images used for sprites
+     * @param {string[]} properties.sprites.male
+     * @param {string[]} properties.sprites.female
      * @param {Shattered.Enums.EquipmentSlot} properties.slot The slot where the item is equipped
+     * @param {Shattered.Enums.SpriteDrawOrder} [properties.layerOverride] The layer to draw on
+     * @param {int} [properties.layerOffset = 0] Relative offset of the images in the layer.
      * @see {Shattered.Objects.Items.Item#init}
      * @constructor
      */
     init: function(properties) {
         this.parent(properties);
 
+        if(!properties.sprites)
+            throw "Equipment must contain EquipmentSprites as an array or separate male/female arrays";
+
+        if(!Array.isArray(properties.sprites)) {
+            if(!Array.isArray(properties.sprites.male) || !Array.isArray(properties.sprites.female))
+                throw "Equipment must contain EquipmentSprites as an array or separate male/female arrays";
+            else {
+                convert(properties.sprites.male);
+                convert(properties.sprites.female);
+            }
+        } else {
+            convert(properties.sprites);
+        }
+
+        function convert(arr, slot) {
+            for(var i=arr.length; i>=0; --i) {
+                if(typeof(arr[i]) === "string") {
+                    arr[i] = new Shattered.Objects.Items.Equipment.EquipmentSprite(arr[i]);
+                } else if(!(arr[i] instanceof Shattered.Objects.Items.Equipment.EquipmentSprite)) {
+                    arr[i] = new Shattered.Objects.Items.Equipment.EquipmentSprite(arr[i].image, arr[i].layerOverride, arr[i].layerOffset);
+                }
+
+                var prefix = Shattered.Resources.getImagePrefixFromEquipmentSlot(slot);
+                arr[i].image = prefix + arr[i].image;
+            }
+        }
+
+        if(!properties.slot)
+            throw "Equipment must have a slot";
+
+        switch(properties.slot) {
+            case Shattered.Enums.EquipmentSlot.Body:
+            case Shattered.Enums.EquipmentSlot.Feet:
+            case Shattered.Enums.EquipmentSlot.Hands:
+            case Shattered.Enums.EquipmentSlot.Head:
+            case Shattered.Enums.EquipmentSlot.Legs:
+            case Shattered.Enums.EquipmentSlot.MainHand:
+            case Shattered.Enums.EquipmentSlot.OffHand:
+                break;
+            default:
+                throw "Invalid equipment slot";
+        }
+
+        properties.layerOffset = properties.layerOffset || 0;
+
+        if(!properties.layerOverride) {
+            switch(properties.slot) {
+                case Shattered.Enums.EquipmentSlot.Body: properties.layerOverride = Shattered.Enums.SpriteDrawOrder.Body; break;
+                case Shattered.Enums.EquipmentSlot.Feet: properties.layerOverride = Shattered.Enums.SpriteDrawOrder.Feet; break;
+                case Shattered.Enums.EquipmentSlot.Hands: properties.layerOverride = Shattered.Enums.SpriteDrawOrder.Hands; break;
+                case Shattered.Enums.EquipmentSlot.Head: properties.layerOverride = Shattered.Enums.SpriteDrawOrder.Head; break;
+                case Shattered.Enums.EquipmentSlot.Legs: properties.layerOverride = Shattered.Enums.SpriteDrawOrder.Legs; break;
+                case Shattered.Enums.EquipmentSlot.MainHand:
+                case Shattered.Enums.EquipmentSlot.OffHand: properties.layerOverride = Shattered.Enums.SpriteDrawOrder.Weapon; break;
+            }
+        }
+
         Object.defineProperties(this, {
             equipmentSlot: { value: properties.slot, writable:false, configurable: false, enumerable: true }
-        })
+        });
+    },
+
+    /**
+     * Returns the sprite images of the equipment
+     * @param {Shattered.Enums.Gender} gender
+     * @returns {Shattered.Objects.Items.Equipment.EquipmentSprite[]} Array of equipment sprites
+     */
+    getSpriteImages: function(gender) {
+        var common = Array.isArray(this._properties.sprites) ? this._properties.sprites : null;
+
+        switch(gender) {
+            case Shattered.Enums.Gender.Male: return [].concat(common || this._properties.sprites.male);
+            case Shattered.Enums.Gender.Female: return [].concat(common || this._properties.sprites.female);
+            default: throw "invalid gender: " + gender;
+        }
     }
 });
 
 /**
  *
- * @param {url} image Image URL for the sprite item
- * @param {int} [layerOverride = 0] unused
+ * @param {string} image Image part name for the sprite item
+ * @param {Shattered.Enums.SpriteDrawOrder} [layerOverride = equipment's draw order]
+ * @param {int} [layerOffset = equipment's offset]
  * @constructor
  */
-Shattered.Objects.Items.Equipment.EquipmentSprite = function(image, layerOverride) {
-    Object.defineProperties(this, {
-        image: { value: image, writable: false, configurable: false, enumerable: true },
-        layerOverride: { value: layerOverride || 0, writable: false, configurable: false, enumerable: true }
-    });
+Shattered.Objects.Items.Equipment.EquipmentSprite = function(image, layerOverride, layerOffset) {
+    this.image = image;
+    this.layerOverride = layerOverride;
+    this.layerOffset = layerOffset;
 };
 
 

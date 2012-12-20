@@ -194,6 +194,17 @@ Shattered.Resources = (function() {
         getImage: function() {
 
         },
-        getImageKey: getImageKey
+        getImageKey: getImageKey,
+        getImagePrefixFromEquipmentSlot: function(slot) {
+            switch(slot) {
+                case Shattered.Enums.EquipmentSlot.Body: return "body_";
+                case Shattered.Enums.EquipmentSlot.Feet: return "feet_";
+                case Shattered.Enums.EquipmentSlot.Hands: return "hands_";
+                case Shattered.Enums.EquipmentSlot.Head: return "head_";
+                case Shattered.Enums.EquipmentSlot.Legs: return "legs_";
+                case Shattered.Enums.EquipmentSlot.MainHand: return "weapon_";
+                default: return "";
+            }
+        }
     }
 })();
