@@ -68,4 +68,11 @@ Shattered.Utility = (function() {
             return videoHeight;
         }
     };
+
+    String.validate = function(str) {
+        if(str)
+            return true;
+        else
+            return false;
+    }
 })();

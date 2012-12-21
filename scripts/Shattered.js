@@ -21,8 +21,7 @@
 var Shattered = {
     Objects: {
         Entities: {},
-        Items: {},
-        Library: {}
+        Items: {}
     },
 
     Status: {

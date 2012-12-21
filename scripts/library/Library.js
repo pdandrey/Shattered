@@ -1,5 +1,5 @@
 /**
- * Shattered
+ * Shattered, A Fantasy RPG
  * Copyright (c) 2012 Dave Andrey
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -43,30 +43,32 @@
 
 "use strict";
 
-Shattered.Objects.Items.Item = Object.extend({
-    __classname: "Item",
-
-    /**
-     * Constructor
-     * @param {object} properties Properties of the item
-     * @param {string} properties.name Item name
-     * @param {string} [properties.icon] Image icon for the item
-     * @param {Shattered.Enums.ItemType} properties.type The type of the item
-     * @constructor
-     */
-    init: function(properties) {
+Shattered.Library = {
+    getItem: function(properties) {
         if(!properties)
-            throw "Item must have properties";
+            throw "Cannot get a null item";
         if(!properties.name || typeof(properties.name) !== "string" || properties.name.length === 0)
-            throw "Item must have a name";
+            throw "Cannot get an item without a name";
+        properties.name = properties.name.toLowerCase();
+
         if(!properties.type)
-            throw "Item must have a type";
+            throw "Cannot get an item without a type";
 
-        this._properties = properties;
+        var shelf = null;
 
-        Object.defineProperties(this, {
-            name: {value: properties.name, writable: false, configurable: false, enumerable: true },
-            type: {value:properties.type, writable: false, configurable:false, enumerable: true }
-        });
+        switch(properties.type) {
+            case Shattered.Enums.ItemType.Armor:
+                shelf = Shattered.Library.Armor;
+                break;
+
+            default:
+                throw "Unsupported Item Type " + properties.type;
+        }
+
+        var item = shelf[properties.name];
+        if(item)
+            return item;
+
+        throw "Item does not exist";
     }
-});
+};

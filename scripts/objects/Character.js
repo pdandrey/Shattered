@@ -1,5 +1,5 @@
 /**
- * Shattered
+ * Shattered, A Fantasy RPG
  * Copyright (c) 2012 Dave Andrey
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -50,6 +50,9 @@ Shattered.Objects.Character = Object.extend({
      *
      * @param {object} properties
      * @param {string} properties.name The character's name
+     * @param {string} properties.base The character's base color
+     * @param {string} [properties.hair] The character's hair
+     * @param {Shattered.Enums.Gender} properties.gender The character's gender
      * @constructor
      */
     init: function(properties) {
@@ -57,12 +60,29 @@ Shattered.Objects.Character = Object.extend({
             throw "Characters must have properties";
         if(typeof(!properties.name) !== "string" && properties.name.length == 0)
             throw "Character must have a name";
+        switch(properties.gender) {
+            case Shattered.Enums.Gender.Male:
+            case Shattered.Enums.Gender.Female:
+                break;
+            default:
+                throw "Character must have a gender";
+        }
+        if(!String.validate(properties.base))
+            throw "Character must have a base";
+
 
         if(!properties.equipment) {
             properties.equipment = {};
         }
 
-        this.equipment = {};
         this._properties = properties;
+
+        this.equipment = new Shattered.Objects.EquipmentManager(this);
+
+        this.redraw();
+    },
+
+    redraw: function() {
+
     }
 });

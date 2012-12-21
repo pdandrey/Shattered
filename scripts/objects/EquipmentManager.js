@@ -43,27 +43,86 @@
 
 "use strict";
 
-Shattered.EquipmentManager = (function() {
-    
-    function equip(char, item) {
+(function() {
 
-    }
+    Shattered.Objects.EquipmentManager = function EquipmentManager(character) {
+        this._equipment = {};
+        this._character = character;
+        this._redraw = false;
 
-    function unequip(char, slot) {
+        for(var slot in Shattered.Enums.EquipmentSlot) {
+            this._equipment[slot] = null;
+        }
+        if(character._properties.equipment) {
+            for(var key in character._properties.equipment) {
+                this.equip(character._properties.equipment[key]);
+            }
+        }
 
-    }
-
-    function clear(char) {
-
-    }
-
-    function redraw(char) {
-
-    }
-
-    var ret = {
-        equip: equip,
-        unequip: unequip,
-        clear: clear
+        this._redraw = true;
     };
+
+    /**
+     * Equip a piece of equipment
+     * @param {Shattered.Objects.Items.Equipment} item The item to equip.
+     */
+    EquipmentManager.prototype.equip = function(item) {
+        if(this._equipment[item.equipmentSlot] == item)
+            return;
+
+        this._equipment[item.equipmentSlot] = item;
+        this._character._properties.equipment[item.equipmentSlot] = { name: item.name, type: item.type };
+
+        console.warn("Need to remove item from inventory");
+        if(this._redraw)
+            this._character.redraw();
+    };
+
+    EquipmentManager.prototype.unequip = function(slot) {
+        if(!slot)
+            throw "Must specify slot to unequip";
+
+        var item = this._equipment[slot];
+        this._equipment[slot] = null;
+        this._character._properties.equipment[slot] = null;
+
+        console.warn("need to add item to inventory");
+
+        if(this._redraw)
+            this._character.redraw();
+    };
+
+    EquipmentManager.prototype.unequipAll = function() {
+        var tmp = this._redraw;
+        this._redraw = false;
+
+        for(var slot in Shattered.Enums.EquipmentSlot)
+            this.unequip(slot);
+
+        this._redraw = tmp;
+        if(this._redraw)
+            this._character.redraw();
+    };
+
+    EquipmentManager.prototype.getSpriteImages = function() {
+        var ret = [];
+
+        for(var slot in Shattered.Enums.EquipmentSlot) {
+            if(this._equipment[slot]) {
+                var images = this._equipment[slot].getSpriteImages();
+                for(var i=0; i<images.length; ++i) {
+                    ret.push({
+                        image: images[i].image,
+                        index: images[i].layerOverride + (0.1 * images[i].layerOffset)
+                    });
+                }
+            }
+        }
+
+        ret.sort(function(a, b) {
+            return a.index - b.index;
+        });
+
+        return ret;
+    }
 })();

@@ -39,6 +39,9 @@ Shattered.Enums = {
     ArmorType: { Cloth: 1, Leather: 2, Chain: 3, Plate: 4 },
 
     /** @enum {int} */
+    ItemType: { Usable: 1, Loot: 2, Armor: 3, Weapon: 4 },
+
+    /** @enum {int} */
     SpriteDrawOrder: {
         Base: 0,
         PreFeet: 1,
