@@ -55,11 +55,8 @@ Shattered.Utility = (function() {
         },
 
         getImage: function(name) {
-            var result = me.loader.getImage(name);
-            if (!result) {
-                throw "Error: No image named `" + name + "` (Did you forget to include the resource?)";
-            }
-            return result;
+            console.warn("Depricated.  Please use Shattered.Resources.getImage()");
+            return Shattered.Resources.getImage(name);
         },
 
         getHeight: function() {
@@ -68,11 +65,11 @@ Shattered.Utility = (function() {
             return videoHeight;
         }
     };
-
-    String.validate = function(str) {
-        if(str)
-            return true;
-        else
-            return false;
-    }
 })();
+
+String.validate = function(str) {
+    if(typeof(str) === "string" && str)
+        return true;
+    else
+        return false;
+};

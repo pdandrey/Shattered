@@ -43,35 +43,22 @@
 
 "use strict";
 
-Shattered.Library = {
-    getItem: function(properties) {
-        if(!properties)
-            throw "Cannot get a null item";
-        if(!String.validate(properties.name))
-            throw "Cannot get an item without a name";
-        properties.name = properties.name.toLowerCase();
+/**
+ *
+ * @param {string} image Image part name for the sprite item
+ * @param {Shattered.Enums.SpriteDrawOrder} [layerOverride = equipment's draw order]
+ * @param {int} [layerOffset = equipment's offset]
+ * @constructor
+ */
+Shattered.Objects.LayerSprite = function(image, layerOverride, layerOffset) {
+    this.image = image;
+    //this.layerOverride = layerOverride;
+    //this.layerOffset = layerOffset;
+    this.index = layerOverride + (0.1 * layerOffset);
+    this.color = null;
+    this.filter = null;
+};
 
-        if(!properties.type)
-            throw "Cannot get an item without a type";
-
-        var shelf = null;
-
-        switch(properties.type) {
-            case Shattered.Enums.ItemType.Armor:
-                shelf = Shattered.Library.Armor;
-                break;
-
-            default:
-                throw "Unsupported Item Type " + properties.type;
-        }
-
-        if(properties.subtype)
-            shelf = shelf[properties.subtype];
-
-        var item = shelf[properties.name];
-        if(item)
-            return item;
-
-        throw "Item does not exist";
-    }
+Shattered.Objects.LayerSprite.fnSort = function(a, b) {
+    return a.index - b.index;
 };

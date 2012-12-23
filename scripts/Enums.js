@@ -30,13 +30,13 @@ Shattered.Enums = {
     Updates: { Player: 1, NPC: 2, Dialog: 4 },
 
     /** @enum {int} */
-    EquipmentSlot: { Head: 1, Body: 2, Hands: 3, Legs: 4, Feet: 5, MainHand: 6, OffHand: 7 },
+    EquipmentSlot: { Head: "Head", Body: "Body", Hands: "Hands", Legs: "Legs", Feet: "Feet", MainHand: "MainHand", OffHand: "OffHand" },
 
     /** @enum {int} */
-    Gender: { Male: 1, Female: 2, None: 3 },
+    Gender: { Male: "Male", Female: "Female", None: "None" },
 
     /** @enum {int} */
-    ArmorType: { Cloth: 1, Leather: 2, Chain: 3, Plate: 4 },
+    ArmorType: { Cloth: "Cloth", Leather: "Leather", Chain: "Chain", Plate: "Plate" },
 
     /** @enum {int} */
     ItemType: { Usable: 1, Loot: 2, Armor: 3, Weapon: 4 },
@@ -53,12 +53,15 @@ Shattered.Enums = {
         PreBody: 7,
         Body: 8,
         PostBody: 9,
-        PreHead: 10,
-        Head: 11,
-        PostHead: 12,
-        PreWeapon: 13,
-        Weapon: 14,
-        PostWeapon: 15,
-        Last: 16
+        PreHair: 10,
+        Hair: 11,
+        PostHair: 12,
+        PreHead: 13,
+        Head: 14,
+        PostHead: 15,
+        PreWeapon: 16,
+        Weapon: 17,
+        PostWeapon: 18,
+        Last: 19
     }
 };

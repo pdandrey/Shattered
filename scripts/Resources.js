@@ -26,7 +26,8 @@ Shattered.Resources = (function() {
         Sprite: 2,
         Map: 3,
         Tiles: 4,
-        Sprite_Base64: 5
+        Sprite_Base64: 5,
+        Hair: 6
     };
 
     function getImages() {
@@ -142,6 +143,13 @@ Shattered.Resources = (function() {
                 dir = "";
                 break;
 
+            case ResourceTypes.Hair:
+                this.type = "image";
+                ext = ".png";
+                dir += "sprites/hair/";
+                this.name = "hair_" + name;
+                break;
+
             default:
                 throw "Unknown resource type " + type;
         }
@@ -183,7 +191,12 @@ Shattered.Resources = (function() {
         return gender + "_" + name;
     }
 
-    return {
+    function loadError() {
+        console.error("An error occurred loading an image: %o", arguments);
+        throw "An error occurred loading an image";
+    }
+
+    var ret = {
         load: load,
         /**
          * Returns the SpriteSheet for the given name
@@ -191,8 +204,44 @@ Shattered.Resources = (function() {
          * @return {Shattered.Objects.SpriteSheet}
          */
         getSpriteSheet: function(name) { return spritesheets[name.toLowerCase()]; },
-        getImage: function() {
+        getImage: function(key) {
+            var result = me.loader.getImage(key);
+            if (!result) {
+                throw "Error: No image named '" + key + "' (Did you forget to include the resource?)";
+            }
+            return result;
+        },
+        getSpriteImage: function(sprite, gender, loadedCallback) {
+            var key = gender + "_" + sprite.image;
+            var result = me.loader.getImage(key);
 
+            if(!result) {
+                var res = new ResourceItem(key, ResourceTypes.Sprite, gender + "/" + sprite.image);
+                me.loader.load(res,
+                    loadedCallback,
+                    loadError);
+            }
+
+            return result;
+        },
+        getBaseHairImage: function(sprite, loadedImageCallback) {
+            var key = "hair_" + sprite.image;
+            var hair = me.loader.getImage(key);
+
+            if(hair)
+                return hair;
+
+            key = new ResourceItem(sprite.image, ResourceTypes.Hair);
+            me.loader.load(key, loadedImageCallback, function() { console.error(arguments); });
+            return null;
+        },
+        cacheHairImage: function(sprite, dataString) {
+            var key = "hair_" + sprite.image + "_" + (sprite.color ? sprite.color.join(",") : "255,255,255");
+            me.loader.load(new ResourceItem(key, ResourceTypes.Sprite_Base64, dataString));
+        },
+        getHairImage: function(sprite) {
+            var key = "hair_" + sprite.image + "_" + (sprite.color ? sprite.color.join(",") : "255,255,255");
+            return ret.getImage(key);
         },
         getImageKey: getImageKey,
         getImagePrefixFromEquipmentSlot: function(slot) {
@@ -206,5 +255,7 @@ Shattered.Resources = (function() {
                 default: return "";
             }
         }
-    }
+    };
+
+    return ret;
 })();

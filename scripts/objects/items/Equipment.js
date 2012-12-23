@@ -106,11 +106,11 @@ Shattered.Objects.Items.Equipment = Shattered.Objects.Items.Item.extend({
         }
 
         function convert(arr, slot) {
-            for(var i=arr.length; i>=0; --i) {
+            for(var i=arr.length-1; i>=0; --i) {
                 if(typeof(arr[i]) === "string") {
-                    arr[i] = new Shattered.Objects.Items.Equipment.EquipmentSprite(arr[i]);
-                } else if(!(arr[i] instanceof Shattered.Objects.Items.Equipment.EquipmentSprite)) {
-                    arr[i] = new Shattered.Objects.Items.Equipment.EquipmentSprite(arr[i].image, arr[i].layerOverride, arr[i].layerOffset);
+                    arr[i] = new Shattered.Objects.LayerSprite(arr[i], properties.layerOverride, 0);
+                } else if(!(arr[i] instanceof Shattered.Objects.LayerSprite)) {
+                    arr[i] = new Shattered.Objects.LayerSprite(arr[i].image, arr[i].layerOverride || properties.layerOverride, arr[i].layerOffset || 0);
                 }
 
                 var prefix = Shattered.Resources.getImagePrefixFromEquipmentSlot(slot);
@@ -126,7 +126,7 @@ Shattered.Objects.Items.Equipment = Shattered.Objects.Items.Item.extend({
     /**
      * Returns the sprite images of the equipment
      * @param {Shattered.Enums.Gender} gender
-     * @returns {Shattered.Objects.Items.Equipment.EquipmentSprite[]} Array of equipment sprites
+     * @returns {Shattered.Objects.LayerSprite[]} Array of equipment sprites
      */
     getSpriteImages: function(gender) {
         var common = Array.isArray(this._properties.sprites) ? this._properties.sprites : null;
@@ -138,20 +138,6 @@ Shattered.Objects.Items.Equipment = Shattered.Objects.Items.Item.extend({
         }
     }
 });
-
-/**
- *
- * @param {string} image Image part name for the sprite item
- * @param {Shattered.Enums.SpriteDrawOrder} [layerOverride = equipment's draw order]
- * @param {int} [layerOffset = equipment's offset]
- * @constructor
- */
-Shattered.Objects.Items.Equipment.EquipmentSprite = function(image, layerOverride, layerOffset) {
-    this.image = image;
-    this.layerOverride = layerOverride;
-    this.layerOffset = layerOffset;
-};
-
 
 Shattered.Objects.Items.Armor = Shattered.Objects.Items.Equipment.extend({
     __classname: "Armor",
